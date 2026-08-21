@@ -1,2 +1,49 @@
-// Populated by its domain owner. Keep exports explicit — no accidental API.
-export {};
+// Data table domain (§14, §21). Public surface only — the `@tanstack/react-table`
+// machine is encapsulated inside `use-data-table.ts` and never re-exported here.
+
+// Presentation primitives (§M-03 split, server-safe).
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  type TableCellProps,
+  type TableHeadProps,
+  type TableProps,
+  type TableRowProps,
+} from "./table";
+
+// The full data table machine.
+export { DataTable, type DataTableProps } from "./data-table";
+
+// Column-visibility toolbar helper.
+export {
+  DataTableColumnsButton,
+  type DataTableColumnsButtonProps,
+} from "./columns-button";
+
+// Public type surface (no TanStack types).
+export type {
+  DataTableAlign,
+  DataTableCellType,
+  DataTableColumn,
+  DataTableColumnVisibilityConfig,
+  DataTableEmptyStateConfig,
+  DataTableErrorConfig,
+  DataTableExpandable,
+  DataTableHideBelow,
+  DataTableLabels,
+  DataTableNoResultsConfig,
+  DataTablePaginationConfig,
+  DataTableRowAction,
+  DataTableRowProps,
+  DataTableSelectionConfig,
+  DataTableSort,
+  DataTableSortDirection,
+  DataTableSortingConfig,
+  DataTableUserValue,
+  SensitivityLevel,
+} from "./types";

@@ -1,2 +1,28 @@
-// Populated by its domain owner. Keep exports explicit — no accidental API.
-export {};
+// Security (§23, §24) — sessions, devices, keys, scopes, roles, permission
+// matrix and the audit-event row. Composable pieces over the Wave-1 primitives.
+export {
+  SessionItem,
+  SessionList,
+  type DeviceType,
+  type SessionItemProps,
+  type SessionListProps,
+} from "./session-item";
+export { DeviceItem, DeviceList, type DeviceItemProps, type DeviceListProps } from "./device-item";
+export { ApiKeyItem, ApiKeyList, type ApiKeyItemProps, type ApiKeyListProps } from "./api-key-item";
+export { TokenReveal, type TokenRevealProps } from "./token-reveal";
+export { ScopeBadge, scopeTone, type ScopeBadgeProps } from "./scope-badge";
+export { RoleBadge, roleTone, type RoleBadgeProps } from "./role-badge";
+export {
+  PermissionMatrix,
+  type PermissionMatrixEntry,
+  type PermissionMatrixLabels,
+  type PermissionMatrixProps,
+} from "./permission-matrix";
+export {
+  AuditEvent,
+  SecurityEvent,
+  type AuditEventProps,
+  type SecurityEventActor,
+  type SecurityEventProps,
+  type SecurityEventTechnical,
+} from "./security-event";
