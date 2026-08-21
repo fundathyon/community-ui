@@ -19,10 +19,21 @@ body {
 }
 
 /* -- Global focus ring (§C-02) — 2px ring + 2px offset, never removed
- *    without a substitute ------------------------------------------------- */
-:focus-visible {
-  outline: var(--fdn-focus-width) solid var(--fdn-focus);
-  outline-offset: var(--fdn-focus-offset);
+ *    without a substitute.
+ *
+ *    In `@layer base` (like Tailwind's own Preflight) AND scoped with `:where()`
+ *    for zero specificity, so an `outline-none` utility ALWAYS wins: an
+ *    unlayered rule beats every layer regardless of specificity, and within the
+ *    base layer specificity would still tie — both are closed here. Composite
+ *    controls (Input, Select, Combobox…) render the ring on their wrapper via
+ *    `focus-within` and set `outline-none` on the inner focusable element; this
+ *    keeps them from painting a SECOND, duplicate ring on that inner element.
+ *    Bare interactive elements carry no outline utility, so they keep the ring. */
+@layer base {
+  :where(:focus-visible) {
+    outline: var(--fdn-focus-width) solid var(--fdn-focus);
+    outline-offset: var(--fdn-focus-offset);
+  }
 }
 
 /* -- Scrollbars — quiet, panel-grade -------------------------------------- */
