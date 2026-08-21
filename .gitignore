@@ -1,0 +1,15 @@
+# deps
+node_modules/
+
+# build output — committed only on release tags via `pnpm release:check` + git add -f
+dist/
+
+# demo app
+demo/.next/
+demo/out/
+demo/next-env.d.ts
+
+# misc
+*.tsbuildinfo
+.DS_Store
+coverage/

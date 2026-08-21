@@ -1,0 +1,9 @@
+/**
+ * Build entry for the prebuilt stylesheet (dist/styles.css).
+ * For consumers WITHOUT Tailwind: a complete, self-contained stylesheet with
+ * preflight + tokens + every utility the library's components use.
+ */
+/* source(none): the prebuilt stylesheet is generated ONLY from the library's
+ * own sources (via the @source in theme.css) — never from stray project files. */
+@import "tailwindcss" source(none);
+@import "./theme.css";

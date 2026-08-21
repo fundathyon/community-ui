@@ -1,0 +1,91 @@
+{
+  "name": "@foundathyon/community-ui",
+  "version": "0.1.0",
+  "description": "Foundathyon Community UI — the official implementation of the Foundathyon Design System (v2) for React/Next.js + Tailwind CSS. One design system. Many products. One implementation.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/foundathyon/community-ui.git"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./charts": {
+      "types": "./dist/charts/index.d.ts",
+      "import": "./dist/charts/index.js"
+    },
+    "./docs": {
+      "types": "./dist/docs/index.d.ts",
+      "import": "./dist/docs/index.js"
+    },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "import": "./dist/email/index.js"
+    },
+    "./tokens.css": "./dist/styles/tokens.css",
+    "./theme.css": "./dist/styles/theme.css",
+    "./styles.css": "./dist/styles.css",
+    "./tailwind-preset": {
+      "types": "./dist/tailwind-preset.d.cts",
+      "require": "./dist/tailwind-preset.cjs",
+      "default": "./dist/tailwind-preset.cjs"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && pnpm run build:css && node scripts/copy-assets.mjs",
+    "build:css": "tailwindcss -i src/styles/full.css -o dist/styles.css --minify",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src tests",
+    "demo:dev": "pnpm --filter community-ui-demo dev",
+    "demo:build": "pnpm --filter community-ui-demo build",
+    "release:check": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.2.0",
+    "@tanstack/react-table": "^8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.577.0",
+    "react-day-picker": "^9.14.0",
+    "recharts": "^3.2.1",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.6.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "jsdom": "^26.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.30.0",
+    "vitest": "^3.2.0"
+  },
+  "packageManager": "pnpm@11.21.0"
+}
