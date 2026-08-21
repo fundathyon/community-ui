@@ -7,14 +7,60 @@ import { ApiResponse } from "../../src/docs/api-response";
 import { ApiSchema, EnumTable, PropertyTable, type SchemaNode } from "../../src/docs/api-schema";
 
 describe("ApiEndpoint", () => {
-  it("shows the method chip, path, description and deprecation badge", () => {
-    render(
-      <ApiEndpoint method="GET" path="/v1/configs" description="List the configs." deprecated />,
-    );
+  it("shows the method chip, path and description", () => {
+    render(<ApiEndpoint method="GET" path="/v1/configs" description="List the configs." />);
     expect(screen.getByText("GET")).toBeInTheDocument();
     expect(screen.getByText("/v1/configs")).toBeInTheDocument();
     expect(screen.getByText("List the configs.")).toBeInTheDocument();
-    expect(screen.getByText("Deprecated")).toBeInTheDocument();
+  });
+
+  it("renders no VersionBadge and no DeprecationNotice when status is omitted", () => {
+    render(<ApiEndpoint method="GET" path="/v1/configs" />);
+    expect(screen.queryByText("Deprecated")).not.toBeInTheDocument();
+    expect(screen.queryByText("Beta")).not.toBeInTheDocument();
+    expect(screen.queryByText(/^New/)).not.toBeInTheDocument();
+  });
+
+  it("shows a 'New in {version}' VersionBadge for status.kind 'new'", () => {
+    render(<ApiEndpoint method="GET" path="/v1/configs" status={{ kind: "new", version: "2.4" }} />);
+    expect(screen.getByText("New in 2.4")).toBeInTheDocument();
+  });
+
+  it("shows a 'Beta' VersionBadge for status.kind 'beta'", () => {
+    render(<ApiEndpoint method="GET" path="/v1/configs" status={{ kind: "beta" }} />);
+    expect(screen.getByText("Beta")).toBeInTheDocument();
+  });
+
+  it("shows the Deprecated badge plus a DeprecationNotice immediately below the heading for status.kind 'deprecated'", () => {
+    const { container } = render(
+      <ApiEndpoint
+        method="GET"
+        path="/v1/configs"
+        description="List the configs."
+        status={{
+          kind: "deprecated",
+          version: "2.4",
+          removedIn: "3.0",
+          removedInEta: "Q1 2027",
+          alternative: <code>/v1/configs?environment=</code>,
+        }}
+      />,
+    );
+
+    // Both the badge and the notice's own heading read "Deprecated" by default.
+    expect(screen.getAllByText("Deprecated")).toHaveLength(2);
+
+    const notice = container.querySelector('[data-kind="warning"]');
+    expect(notice).toBeInTheDocument();
+    expect(notice?.textContent ?? "").toContain("Removed in 3.0");
+    expect(notice?.textContent ?? "").toContain("Q1 2027");
+
+    // Order in the DOM: badge + heading first, the notice immediately below
+    // it, description last (§26 — the notice never sits at the page's end).
+    const heading = screen.getByText("GET").closest("div");
+    const description = screen.getByText("List the configs.");
+    expect(heading!.compareDocumentPosition(notice!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(notice!.compareDocumentPosition(description) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });
 

@@ -5,6 +5,7 @@ import {
   Checkbox,
   Combobox,
   DatePicker,
+  FileUpload,
   FormActions,
   FormField,
   FormSection,
@@ -25,6 +26,7 @@ import {
   Text,
   Textarea,
   useToast,
+  type FileUploadValue,
 } from "@foundathyon/community-ui";
 import { useState, type FormEvent } from "react";
 
@@ -51,6 +53,29 @@ export function FormsView() {
   const [scopes, setScopes] = useState<string[]>(["read"]);
   const [expiry, setExpiry] = useState<Date | null>(new Date(Date.now() + 7 * 86_400_000));
   const [retention, setRetention] = useState(30);
+  const [configFile, setConfigFile] = useState<FileUploadValue | null>(null);
+
+  // Fake upload driver: FileUpload never touches the network itself, so the
+  // consumer pushes status/progress back in — this mirrors a real fetch/XHR
+  // progress handler. Triggered directly from the change handler (not a
+  // status-watching effect) so it runs exactly once per queued file,
+  // including re-queues from Retry.
+  function handleConfigFileChange(next: FileUploadValue | null) {
+    setConfigFile(next);
+    if (next?.status !== "queued") return;
+    const { file } = next;
+    setConfigFile({ file, status: "uploading", progress: 0 });
+    let progress = 0;
+    const timer = setInterval(() => {
+      progress += 18;
+      if (progress >= 100) {
+        clearInterval(timer);
+        setConfigFile((current) => (current?.file === file ? { ...current, status: "done", progress: 100 } : current));
+        return;
+      }
+      setConfigFile((current) => (current?.file === file ? { ...current, progress } : current));
+    }, 300);
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,6 +118,20 @@ export function FormsView() {
             error="Este dominio ya tiene un enlace activo (409 Conflict)."
           >
             <Input name="domain" defaultValue="foundathyon.dev" invalid leading={<Text as="span" variant="code">@</Text>} />
+          </FormField>
+
+          <FormField label="Config adjunta" description="Se adjunta al enlace tal cual — sin procesar en el servidor.">
+            <FileUpload
+              value={configFile}
+              onValueChange={handleConfigFileChange}
+              accept=".yaml,.yml,.json,.env"
+              maxSize={2 * 1024 * 1024}
+              prompt="Arrastra un archivo o búscalo"
+              hint="YAML, JSON o .env · hasta 2 MB"
+              actionLabel={(action, fileName) =>
+                action === "retry" ? `Reintentar ${fileName}` : `Quitar ${fileName}`
+              }
+            />
           </FormField>
 
           <Grid min="16rem" gap={4}>

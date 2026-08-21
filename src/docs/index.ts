@@ -37,6 +37,7 @@ export {
   Warning,
   Danger,
   Important,
+  Aside,
   type AdmonitionProps,
   type AdmonitionKind,
 } from "./admonition";
@@ -47,7 +48,15 @@ export { Expandable, type ExpandableProps } from "./expandable";
 export { Blockquote, type BlockquoteProps } from "./blockquote";
 
 // ── API reference ───────────────────────────────────────────────────────────
-export { ApiEndpoint, type ApiEndpointProps } from "./api-endpoint";
+export { ApiEndpoint, type ApiEndpointProps, type ApiEndpointStatus } from "./api-endpoint";
+export {
+  VersionBadge,
+  DeprecationNotice,
+  type VersionBadgeProps,
+  type VersionBadgeState,
+  type DeprecationNoticeProps,
+  type DeprecationInfo,
+} from "./version-badge";
 export { ApiParameters, type ApiParametersProps, type ApiParameter, type ApiParameterIn } from "./api-parameters";
 export { ApiRequest, type ApiRequestProps } from "./api-request";
 export { ApiResponse, type ApiResponseProps } from "./api-response";

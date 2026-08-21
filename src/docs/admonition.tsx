@@ -1,16 +1,20 @@
-import { Info, Lightbulb, OctagonAlert, Sparkles, TriangleAlert, type LucideIcon } from "lucide-react";
+import { Info, Lightbulb, OctagonAlert, Sparkles, StickyNote, TriangleAlert, type LucideIcon } from "lucide-react";
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../lib/cn";
 import { Icon } from "../components/typography/icon";
 
 /**
- * The five admonition kinds (§26). Four map to the semantic tones; `important`
- * maps to the ACCENT — the only sanctioned use of the brand color in docs
- * (§26 "Consejo … Único uso del acento en docs" is extended to the emphatic
- * "Important" callout): it is brand emphasis, never a state, so it never uses a
- * tone token.
+ * The admonition kinds (§26). `note`, `warning`, and `danger` map to their
+ * matching semantic tone. `tip` maps to the ACCENT — §26 "Consejo … Único uso
+ * del acento en docs": Tip is the spec's one sanctioned use of the brand
+ * color in the docs callout system (this was previously wired to `important`
+ * by mistake; fixed below). `aside` (§26 "Ejemplo") is intentionally
+ * neutral/colorless — "no es un aviso", not a warning-family callout at all.
+ * `important` is a pre-existing kind beyond the spec's 5 tones, kept for
+ * emphatic brand callouts; it also renders in the accent, a known second use
+ * left as-is (out of scope for this pass — see admonition.test.tsx).
  */
-export type AdmonitionKind = "note" | "tip" | "warning" | "danger" | "important";
+export type AdmonitionKind = "note" | "tip" | "warning" | "danger" | "important" | "aside";
 
 interface KindSpec {
   icon: LucideIcon;
@@ -26,7 +30,8 @@ interface KindSpec {
 
 const KIND: Record<AdmonitionKind, KindSpec> = {
   note: { icon: Info, title: "Note", bar: "border-info-border", wash: "bg-info-bg", text: "text-info" },
-  tip: { icon: Lightbulb, title: "Tip", bar: "border-success-border", wash: "bg-success-bg", text: "text-success" },
+  // §26 "Consejo … Único uso del acento en docs" — Tip is the ONE accent-toned kind.
+  tip: { icon: Lightbulb, title: "Tip", bar: "border-accent-border", wash: "bg-accent-bg", text: "text-accent" },
   warning: {
     icon: TriangleAlert,
     title: "Warning",
@@ -48,10 +53,18 @@ const KIND: Record<AdmonitionKind, KindSpec> = {
     wash: "bg-accent-bg",
     text: "text-accent",
   },
+  // §26 "Ejemplo" — neutral/colorless on purpose: explicitly not a warning-family callout.
+  aside: {
+    icon: StickyNote,
+    title: "Aside",
+    bar: "border-border",
+    wash: "bg-bg-subtle",
+    text: "text-text-secondary",
+  },
 };
 
 export interface AdmonitionProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
-  /** Which of the five callouts. Prefer the named presets (Note/Tip/…). */
+  /** Which callout kind. Prefer the named presets (Note/Tip/Warning/Danger/Aside/Important). */
   kind: AdmonitionKind;
   /** Heading of the callout. Defaults to the kind's name; always overridable. */
   title?: ReactNode;
@@ -60,9 +73,11 @@ export interface AdmonitionProps extends Omit<HTMLAttributes<HTMLDivElement>, "t
 }
 
 /**
- * Admonition — the one callout component behind the five docs presets (§26).
- * A 2px side bar (not a full border, which is what separates it from the
- * product Alert), a tonal wash, a fixed icon per kind and an optional title.
+ * Admonition — the one callout component behind the docs presets (§26): the
+ * spec's five tones (Note/Tip/Warning/Danger/Aside) plus the pre-existing
+ * extra `Important`. A 2px side bar (not a full border, which is what
+ * separates it from the product Alert), a tonal wash, a fixed icon per kind
+ * and an optional title.
  *
  * Docs are static content, so — unlike Alert — an admonition carries NO
  * `role="alert"`/`status`: the icon and title convey the meaning. Max two per
@@ -98,7 +113,7 @@ export function Note({ kind: _kind, ...props }: Omit<AdmonitionProps, "kind"> & 
   return <Admonition kind="note" {...props} />;
 }
 
-/** Tip (§26) — an optional recommendation. Success tone. */
+/** Tip (§26) — an optional recommendation. The one sanctioned accent use in docs. */
 export function Tip({ kind: _kind, ...props }: Omit<AdmonitionProps, "kind"> & { kind?: never }) {
   return <Admonition kind="tip" {...props} />;
 }
@@ -113,7 +128,20 @@ export function Danger({ kind: _kind, ...props }: Omit<AdmonitionProps, "kind"> 
   return <Admonition kind="danger" {...props} />;
 }
 
-/** Important (§26) — brand emphasis, the sanctioned docs use of the accent. */
+/** Important (§26) — brand emphasis, a pre-existing kind beyond the spec's 5 tones. */
 export function Important({ kind: _kind, ...props }: Omit<AdmonitionProps, "kind"> & { kind?: never }) {
   return <Admonition kind="important" {...props} />;
+}
+
+/**
+ * Aside (§26 "Ejemplo") — the spec's 5th, neutral tone: colorless, "no es un
+ * aviso" (not a warning-family callout at all).
+ *
+ * Named `Aside`, not `Example` — `Example` already names the unrelated
+ * tabs+code walkthrough component in this domain (see example.tsx). Reusing
+ * that name here would conflate two different things: this is a plain
+ * neutral callout, that is a structural preview/code block.
+ */
+export function Aside({ kind: _kind, ...props }: Omit<AdmonitionProps, "kind"> & { kind?: never }) {
+  return <Admonition kind="aside" {...props} />;
 }

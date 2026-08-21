@@ -2,6 +2,7 @@
 
 import {
   AppSwitcher,
+  CommandPalette,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -17,7 +18,9 @@ import {
   SidebarTrigger,
   Topbar,
   UserMenu,
+  useCommandPalette,
   useTheme,
+  type CommandGroup,
   type ThemeChoice,
 } from "@foundathyon/community-ui";
 import {
@@ -33,6 +36,8 @@ import {
   Monitor,
   Moon,
   Package,
+  RefreshCw,
+  Search,
   Sun,
   TerminalSquare,
   Users,
@@ -103,10 +108,48 @@ function ProductMark() {
   );
 }
 
+function useDemoCommandGroups(): CommandGroup[] {
+  const router = useRouter();
+  const { setTheme } = useTheme();
+
+  return [
+    {
+      heading: "Ir a",
+      items: NAV.flatMap((group) => group.items).map((item) => ({
+        id: item.href,
+        label: item.label,
+        icon: <item.icon size={16} />,
+        onSelect: () => router.push(item.href),
+      })),
+    },
+    {
+      heading: "Acciones",
+      items: [
+        {
+          id: "sync-registry",
+          label: "Sincronizar registry",
+          icon: <RefreshCw size={16} />,
+          keywords: ["dokgistry", "sync"],
+          onSelect: () => {},
+        },
+        {
+          id: "toggle-theme",
+          label: "Cambiar a tema claro",
+          icon: <Sun size={16} />,
+          keywords: ["dark", "light", "tema"],
+          onSelect: () => setTheme("light"),
+        },
+      ],
+    },
+  ];
+}
+
 export function DemoShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { product, setProduct } = useDemoProduct();
+  const palette = useCommandPalette();
+  const commandGroups = useDemoCommandGroups();
 
   return (
     <SidebarProvider storageKey="fdn-demo-sidebar">
@@ -147,6 +190,16 @@ export function DemoShell({ children }: { children: ReactNode }) {
             }
             trailing={
               <span className="inline-flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => palette.setOpen(true)}
+                  className="hidden h-control-sm items-center gap-2 rounded-md border border-border-strong bg-surface px-2.5 text-body-sm text-text-muted transition-colors hover:bg-surface-hover sm:inline-flex"
+                >
+                  <Search size={14} />
+                  Buscar
+                  <Kbd>⌘K</Kbd>
+                </button>
+                <IconButton icon={Search} label="Buscar" variant="ghost" onClick={() => palette.setOpen(true)} className="sm:hidden" />
                 <AppSwitcher
                   label="Cambiar de producto"
                   products={DEMO_PRODUCTS.map((p) => ({
@@ -173,6 +226,15 @@ export function DemoShell({ children }: { children: ReactNode }) {
           <main className="min-w-0 flex-1 px-4 py-6 md:px-6">{children}</main>
         </div>
       </div>
+      <CommandPalette
+        open={palette.open}
+        onOpenChange={palette.setOpen}
+        items={commandGroups}
+        placeholder="Buscar en la vista…"
+        recentLabel="Recientes"
+        emptyMessage="Sin resultados"
+        label="Command menu"
+      />
     </SidebarProvider>
   );
 }

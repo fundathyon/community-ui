@@ -5,6 +5,7 @@ import {
   ApiEndpoint,
   ApiParameters,
   ApiResponse,
+  Aside,
   Danger,
   DocsPage,
   DocsPagination,
@@ -116,10 +117,16 @@ export function DocsView() {
             <Note>Las configuraciones se versionan automáticamente en cada guardado; puedes revertir a cualquier versión.</Note>
             <Warning>Rotar un secreto invalida las sesiones que aún usen el valor anterior.</Warning>
             <Danger>Eliminar una config es permanente: sus versiones y su historial de auditoría desaparecen.</Danger>
+            <Aside>El límite de Community es de 50 GB por organización — no afecta a este tutorial.</Aside>
           </DocsSection>
 
           <DocsSection id="api" heading="Referencia de la API" copyLinkLabel="Copiar enlace" copiedLabel="Copiado">
-            <ApiEndpoint method="GET" path="/v1/users" description="Lista los usuarios de la organización, paginados por cursor.">
+            <ApiEndpoint
+              method="GET"
+              path="/v1/users"
+              status={{ kind: "new", version: "2.4" }}
+              description="Lista los usuarios de la organización, paginados por cursor."
+            >
               <ApiParameters
                 requiredLabel="obligatorio"
                 headers={{ name: "Parámetro", type: "Tipo", description: "Descripción" }}
@@ -136,6 +143,19 @@ export function DocsView() {
                 <JsonViewer data={USERS_RESPONSE} secretKeys={["jwt_secret"]} secretLabel="oculto" defaultExpandDepth={3} copy />
               </ApiResponse>
             </ApiEndpoint>
+
+            <ApiEndpoint
+              method="GET"
+              path="/v1/configs"
+              status={{
+                kind: "deprecated",
+                version: "2.4",
+                removedIn: "3.0",
+                removedInEta: "Q1 2027",
+                alternative: <code className="text-code">/v1/configs?environment=</code>,
+              }}
+              description="Lista las configs sin filtrar por entorno."
+            />
           </DocsSection>
         </DocsPage>
       </div>

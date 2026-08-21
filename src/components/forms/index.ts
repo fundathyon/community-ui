@@ -12,6 +12,12 @@ export { Checkbox, type CheckboxProps } from "./checkbox";
 export { Radio, RadioGroup, type RadioGroupProps, type RadioProps } from "./radio-group";
 export { Switch, type SwitchProps } from "./switch";
 export { Slider, type SliderProps } from "./slider";
+export {
+  FileUpload,
+  type FileUploadProps,
+  type FileUploadStatus,
+  type FileUploadValue,
+} from "./file-upload";
 export { DatePicker, type DatePickerPreset, type DatePickerProps } from "./date-picker";
 export {
   DateRangePicker,

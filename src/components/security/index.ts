@@ -1,5 +1,6 @@
-// Security (§23, §24) — sessions, devices, keys, scopes, roles, permission
-// matrix and the audit-event row. Composable pieces over the Wave-1 primitives.
+// Security (§20, §23, §24) — sessions, devices, keys, scopes, roles,
+// sensitivity levels, permission matrix, the audit-event row and its value
+// diffs. Composable pieces over the Wave-1 primitives.
 export {
   SessionItem,
   SessionList,
@@ -12,6 +13,13 @@ export { ApiKeyItem, ApiKeyList, type ApiKeyItemProps, type ApiKeyListProps } fr
 export { TokenReveal, type TokenRevealProps } from "./token-reveal";
 export { ScopeBadge, scopeTone, type ScopeBadgeProps } from "./scope-badge";
 export { RoleBadge, roleTone, type RoleBadgeProps } from "./role-badge";
+export {
+  SensitivityBadge,
+  isSensitivityLevel,
+  sensitivityTone,
+  type SensitivityLevel,
+  type SensitivityBadgeProps,
+} from "./sensitivity-badge";
 export {
   PermissionMatrix,
   type PermissionMatrixEntry,
@@ -26,3 +34,4 @@ export {
   type SecurityEventProps,
   type SecurityEventTechnical,
 } from "./security-event";
+export { ValueDiff, type ValueDiffProps } from "./value-diff";

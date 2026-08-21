@@ -1,7 +1,18 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../lib/cn";
 import { HttpRequest, type HttpMethod } from "../components/dev/http-request";
-import { Badge } from "../components/feedback/badge";
+import { DeprecationNotice, VersionBadge, type DeprecationInfo } from "./version-badge";
+
+/**
+ * New / beta / deprecated lifecycle state for an endpoint's heading (§26).
+ * The `deprecated` variant requires `removedIn` and `alternative` at the type
+ * level (via `DeprecationInfo`) — §26 "Una deprecación sin fecha de retirada
+ * y sin alternativa no se publica": a half-filled deprecation doesn't compile.
+ */
+export type ApiEndpointStatus =
+  | { kind: "new"; version: string }
+  | { kind: "beta" }
+  | ({ kind: "deprecated" } & DeprecationInfo);
 
 export interface ApiEndpointProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
   /** HTTP verb — colored by effect via the reused HttpRequest chip (§20). */
@@ -10,10 +21,9 @@ export interface ApiEndpointProps extends Omit<HTMLAttributes<HTMLElement>, "chi
   path: string;
   /** One-line description under the method/path row. */
   description?: ReactNode;
-  /** Marks the endpoint deprecated — a warning Badge next to the heading (§26). */
-  deprecated?: boolean;
-  /** Deprecated Badge label. Overridable (products ship Spanish copy). */
-  deprecatedLabel?: string;
+  /** New / beta / deprecated lifecycle state (§26). Renders a VersionBadge by
+   * the heading and, when deprecated, a DeprecationNotice immediately below it. */
+  status?: ApiEndpointStatus;
   /** Parameter / request / response sections for this endpoint. */
   children?: ReactNode;
 }
@@ -21,32 +31,38 @@ export interface ApiEndpointProps extends Omit<HTMLAttributes<HTMLElement>, "chi
 /**
  * ApiEndpoint — the heading block of an API-reference entry (§26). Reuses the
  * dev HttpRequest row for the method chip + monospace path (so the verb tones
- * stay identical to the product, §20), adds an optional description and a
- * deprecation Badge, then renders its parameter/request/response children.
+ * stay identical to the product, §20), adds an optional description, an
+ * optional lifecycle VersionBadge, and — when deprecated — a DeprecationNotice,
+ * then renders its parameter/request/response children.
  *
- * §26: the deprecation Badge sits by the endpoint heading — never at the foot
- * of the page. Server-component safe.
+ * §26: the version badge sits by the endpoint heading, and the deprecation
+ * notice immediately below it — never at the foot of the page. Server-safe.
  */
 export function ApiEndpoint({
   method,
   path,
   description,
-  deprecated = false,
-  deprecatedLabel = "Deprecated",
+  status,
   className,
   children,
   ...props
 }: ApiEndpointProps) {
   return (
     <section className={cn("my-6", className)} {...props}>
-      {deprecated && (
+      {status && (
         <div className="mb-2">
-          <Badge variant="outline" tone="warning">
-            {deprecatedLabel}
-          </Badge>
+          <VersionBadge state={status.kind} version={status.kind === "new" ? status.version : undefined} />
         </div>
       )}
       <HttpRequest method={method} path={path} />
+      {status?.kind === "deprecated" && (
+        <DeprecationNotice
+          version={status.version}
+          removedIn={status.removedIn}
+          removedInEta={status.removedInEta}
+          alternative={status.alternative}
+        />
+      )}
       {description !== undefined && (
         <p className="mt-2 text-sm leading-[1.7] text-text-secondary">{description}</p>
       )}

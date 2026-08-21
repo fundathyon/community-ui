@@ -12,11 +12,19 @@ import {
   type Product,
 } from "@foundathyon/community-ui";
 import {
+  AccountLockedEmail,
+  ApiKeyCreatedEmail,
+  ApiKeyRevokedEmail,
   emailThemes,
+  GenericInvitationEmail,
   InvitationEmail,
+  JobCompletedEmail,
+  JobFailedEmail,
+  NewDeviceEmail,
   NewLoginEmail,
   OtpEmail,
   renderEmail,
+  ResourceSharedEmail,
   SecurityAlertEmail,
   type EmailTheme,
 } from "@foundathyon/community-ui/email";
@@ -140,6 +148,173 @@ export function EmailsView() {
             heading="Alerta de seguridad"
             headerMeta="Seguridad"
             securityNote="Si has sido tú, no necesitas hacer nada. Si no, protege tu cuenta ahora."
+          />,
+        ),
+      },
+      {
+        key: "account-locked",
+        title: "Cuenta bloqueada",
+        caption: "accounts.auth.lockout · 5 intentos fallidos",
+        html: renderEmail(
+          <AccountLockedEmail
+            theme={theme}
+            greeting="Hola Rafa,"
+            attempts={5}
+            unlockMinutes={15}
+            ip="203.0.113.44"
+            heading="Cuenta bloqueada"
+            body="Tu cuenta se ha bloqueado tras varios intentos de inicio de sesión fallidos."
+            actionUrl="https://accounts.foundathyon.dev/recover"
+            ctaLabel="Restablecer contraseña"
+            headerMeta="Seguridad"
+            securityNote="Si no has sido tú, restablece tu contraseña en cuanto se levante el bloqueo."
+            labels={{ attempts: "Intentos fallidos", ip: "IP", unlock: "Se desbloquea" }}
+          />,
+        ),
+      },
+      {
+        key: "new-device",
+        title: "Dispositivo nuevo",
+        caption: "accounts.auth.new_device · sin reconocer",
+        html: renderEmail(
+          <NewDeviceEmail
+            theme={theme}
+            greeting="Hola Rafa,"
+            deviceName="Firefox en Linux"
+            ip="203.0.113.44"
+            location="ubicación desconocida"
+            time="21 ago 2026, 09:14 UTC"
+            trustUrl="https://accounts.foundathyon.dev/security/devices/trust"
+            reportUrl="https://accounts.foundathyon.dev/security/devices/report"
+            heading="Dispositivo nuevo en tu cuenta"
+            body="Se ha accedido a tu cuenta desde un dispositivo que no reconocemos."
+            trustLabel="Confiar en este dispositivo"
+            reportLabel="No he sido yo"
+            alertTitle="Dispositivo nuevo detectado"
+            headerMeta="Seguridad"
+            wasMeHint="Si has sido tú, no hace falta hacer nada — el dispositivo queda reconocido."
+            labels={{ device: "Dispositivo", ip: "IP", location: "Ubicación", time: "Fecha" }}
+          />,
+        ),
+      },
+      {
+        key: "generic-invitation",
+        title: "Invitación a un recurso",
+        caption: "vault.share.invite · acceso a production/api-keys.yaml",
+        html: renderEmail(
+          <GenericInvitationEmail
+            theme={theme}
+            greeting="Hola,"
+            inviterName="María Fernández"
+            inviterEmail="maria@foundathyon.dev"
+            targetName="production/api-keys.yaml"
+            role="lectura"
+            access={[{ label: "Vault", value: "leer configs de production" }]}
+            acceptUrl="https://accounts.foundathyon.dev/invite/4a7f2e91c4"
+            declineUrl="https://accounts.foundathyon.dev/invite/4a7f2e91c4/decline"
+            expiresDays={7}
+            ctaLabel="Aceptar invitación"
+            declineLabel="Rechazar"
+            fallbackLabel="O copia este enlace en tu navegador:"
+          />,
+        ),
+      },
+      {
+        key: "api-key-created",
+        title: "Clave de API creada",
+        caption: "vault.key.create · ci-deploy",
+        html: renderEmail(
+          <ApiKeyCreatedEmail
+            theme={theme}
+            greeting="Hola Rafa,"
+            keyName="ci-deploy"
+            scopes={["registry:read", "registry:write"]}
+            creatorName="María Fernández"
+            createdAt="7 ago 2026, 14:45 UTC"
+            heading="Clave de API creada"
+            actionUrl="https://accounts.foundathyon.dev/security/api-keys"
+            ctaLabel="Gestionar claves de API"
+            securityNote="Si no has creado esta clave, revócala y contacta con soporte de inmediato."
+            labels={{ scopes: "Scopes", creator: "Creada por", createdAt: "Creada" }}
+          />,
+        ),
+      },
+      {
+        key: "api-key-revoked",
+        title: "Clave de API revocada",
+        caption: "vault.key.revoke · ci-deploy",
+        html: renderEmail(
+          <ApiKeyRevokedEmail
+            theme={theme}
+            greeting="Hola Rafa,"
+            keyName="ci-deploy"
+            revokerName="Rafa"
+            revokedAt="21 ago 2026, 14:56 UTC"
+            heading="Clave de API revocada"
+            consequence="Los pipelines que la usen empezarán a recibir 401 en menos de 30 s."
+            actionUrl="https://accounts.foundathyon.dev/security/api-keys"
+            ctaLabel="Gestionar claves de API"
+            note="Si no esperabas esto, contacta con el administrador de tu organización."
+          />,
+        ),
+      },
+      {
+        key: "resource-shared",
+        title: "Recurso compartido",
+        caption: "vault.share.create · production/api-keys.yaml",
+        html: renderEmail(
+          <ResourceSharedEmail
+            theme={theme}
+            greeting="Hola,"
+            resourceName="production/api-keys.yaml"
+            resourceType="config"
+            sharerName="María Fernández"
+            sharerEmail="maria@foundathyon.dev"
+            shareUrl="https://vault.foundathyon.dev/share/9f2a71c4de"
+            expiresAt="En 7 días"
+            ctaLabel="Abrir config"
+            securityNote="Si no esperabas esto, ignora este mensaje."
+            labels={{ sharedBy: "Compartido por", expires: "Expira" }}
+          />,
+        ),
+      },
+      {
+        key: "job-failed",
+        title: "Job fallido",
+        caption: "cronify.job.failed · rotate-credentials",
+        html: renderEmail(
+          <JobFailedEmail
+            theme={theme}
+            greeting="Hola Rafa,"
+            jobName="rotate-credentials"
+            schedule="0 3 1 * *"
+            reason="El job agotó el tiempo de espera al conectar con el proveedor de credenciales tras 30 s."
+            exitInfo="exit 1"
+            failedAt="21 ago 2026, 03:00 UTC"
+            heading="Job fallido"
+            retryUrl="https://cronify.foundathyon.dev/jobs/rotate-credentials"
+            ctaLabel="Reintentar job"
+            retryNote="Corrige el problema y reintenta el job, o espera a la próxima ejecución programada."
+            labels={{ schedule: "Programación", exitInfo: "Salida", failedAt: "Falló" }}
+          />,
+        ),
+      },
+      {
+        key: "job-completed",
+        title: "Job completado",
+        caption: "cronify.job.completed · cleanup-orphans (bajo demanda)",
+        html: renderEmail(
+          <JobCompletedEmail
+            theme={theme}
+            greeting="Hola Rafa,"
+            jobName="cleanup-orphans"
+            schedule="0 */6 * * *"
+            completedAt="21 ago 2026, 06:00 UTC"
+            duration="1 m 42 s"
+            body="Se eliminaron 23 tags sin referencias."
+            heading="Job completado"
+            actionUrl="https://cronify.foundathyon.dev/jobs/cleanup-orphans"
+            ctaLabel="Ver job"
           />,
         ),
       },

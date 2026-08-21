@@ -68,6 +68,22 @@ export { TokenExpirationEmail } from "./templates/token-expiration-email";
 export type { TokenExpirationEmailProps } from "./templates/token-expiration-email";
 export { ResourceExpirationEmail } from "./templates/resource-expiration-email";
 export type { ResourceExpirationEmailProps } from "./templates/resource-expiration-email";
+export { AccountLockedEmail } from "./templates/account-locked-email";
+export type { AccountLockedEmailProps } from "./templates/account-locked-email";
+export { NewDeviceEmail } from "./templates/new-device-email";
+export type { NewDeviceEmailProps } from "./templates/new-device-email";
+export { GenericInvitationEmail } from "./templates/generic-invitation-email";
+export type { GenericInvitationEmailProps } from "./templates/generic-invitation-email";
+export { ApiKeyCreatedEmail } from "./templates/api-key-created-email";
+export type { ApiKeyCreatedEmailProps } from "./templates/api-key-created-email";
+export { ApiKeyRevokedEmail } from "./templates/api-key-revoked-email";
+export type { ApiKeyRevokedEmailProps } from "./templates/api-key-revoked-email";
+export { ResourceSharedEmail } from "./templates/resource-shared-email";
+export type { ResourceSharedEmailProps } from "./templates/resource-shared-email";
+export { JobFailedEmail } from "./templates/job-failed-email";
+export type { JobFailedEmailProps } from "./templates/job-failed-email";
+export { JobCompletedEmail } from "./templates/job-completed-email";
+export type { JobCompletedEmailProps } from "./templates/job-completed-email";
 
 // Rendering
 export { renderEmail } from "./render";

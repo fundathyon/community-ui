@@ -13,10 +13,11 @@ import {
   truncateMiddle,
 } from "../../lib/format";
 import { STATUS, type StatusKey } from "../../lib/status";
-import type { ToneOrNeutral } from "../../lib/types";
 import { Badge } from "../feedback/badge";
 import { StatusBadge } from "../feedback/status-badge";
+import { Tag } from "../feedback/tag";
 import { Tooltip } from "../overlays/tooltip";
+import { isSensitivityLevel, SensitivityBadge } from "../security/sensitivity-badge";
 import { Icon } from "../typography/icon";
 import type {
   DataTableAlign,
@@ -24,7 +25,6 @@ import type {
   DataTableColumn,
   DataTableLabels,
   DataTableUserValue,
-  SensitivityLevel,
 } from "./types";
 
 /** Every empty value renders this, never a blank cell (§21). */
@@ -58,20 +58,6 @@ function isEmpty(value: unknown): boolean {
 function asNumber(value: unknown): number {
   return typeof value === "number" ? value : Number(value);
 }
-
-const SENSITIVITY_DEFAULT_LABELS: Record<SensitivityLevel, string> = {
-  public: "Public",
-  private: "Private",
-  sensitive: "Sensitive",
-  secret: "Secret",
-};
-
-const SENSITIVITY_TONE: Record<SensitivityLevel, ToneOrNeutral> = {
-  public: "neutral",
-  private: "info",
-  sensitive: "warning",
-  secret: "danger",
-};
 
 /** First one or two initials for the self-contained user avatar. */
 function initialsOf(source: string): string {
@@ -130,7 +116,9 @@ function DigestCell({ value, copyLabel }: { value: string; copyLabel: string }) 
       }}
       className={cn(
         "group/digest inline-flex items-center gap-1.5 rounded-md font-mono text-caption text-text-secondary",
-        "outline-none hover:text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
+        // No `outline-none`: see status-indicator.tsx for why it would poison
+        // the `--tw-outline-style` this focus-visible rule depends on.
+        "hover:text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
       )}
     >
       <span>{truncateMiddle(value)}</span>
@@ -220,15 +208,16 @@ export function CellRenderer<TData>({ column, row, labels }: CellRendererProps<T
     case "version":
       return <span className="font-mono text-caption tabular-nums">{String(value)}</span>;
     case "tags": {
+      // §09: user-editable data (image tags, project labels) is Tag, never
+      // Badge — Badge is reserved for system-decided state. The "+N" overflow
+      // count IS a system-computed summary, so it stays a counter Badge.
       const tags = value as string[];
       const shown = tags.slice(0, 3);
       const extra = tags.length - shown.length;
       return (
         <div className="flex flex-wrap items-center gap-1">
           {shown.map((tag) => (
-            <Badge key={tag} variant="tonal" tone="neutral">
-              {tag}
-            </Badge>
+            <Tag key={tag}>{tag}</Tag>
           ))}
           {extra > 0 && <Badge variant="counter">{`+${extra}`}</Badge>}
         </div>
@@ -247,14 +236,8 @@ export function CellRenderer<TData>({ column, row, labels }: CellRendererProps<T
       );
     }
     case "sensitivity": {
-      const level = value as SensitivityLevel;
-      if (!(level in SENSITIVITY_TONE)) return <span className="text-text-muted">{EMPTY}</span>;
-      const label = labels.sensitivity?.[level] ?? SENSITIVITY_DEFAULT_LABELS[level];
-      return (
-        <Badge variant="tonal" tone={SENSITIVITY_TONE[level]}>
-          {label}
-        </Badge>
-      );
+      if (!isSensitivityLevel(value)) return <span className="text-text-muted">{EMPTY}</span>;
+      return <SensitivityBadge level={value}>{labels.sensitivity?.[value]}</SensitivityBadge>;
     }
     case "text":
     default:
