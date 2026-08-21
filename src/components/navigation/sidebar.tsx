@@ -215,7 +215,11 @@ export function SidebarItem({
   );
 
   const itemProps: AnchorHTMLAttributes<HTMLAnchorElement> & { children: ReactNode } = {
-    href: disabled ? undefined : href,
+    // Only emit `href` when it is a real value: a bare `<a>` without href is a
+    // correct non-navigational item, and — crucially — a `render` consumer that
+    // provides its own href (e.g. Next's <Link>) must not have it clobbered by
+    // an `href: undefined` spread.
+    ...(href !== undefined && !disabled ? { href } : {}),
     "aria-current": current ? "page" : undefined,
     "aria-disabled": disabled || undefined,
     // Keep disabled items reachable by keyboard so the reason tooltip opens.

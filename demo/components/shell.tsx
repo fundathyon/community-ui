@@ -122,8 +122,9 @@ export function DemoShell({ children }: { children: ReactNode }) {
                   key={item.href}
                   icon={item.icon}
                   label={item.label}
+                  href={item.href}
                   current={pathname === item.href}
-                  render={(props) => <Link href={item.href} {...props} />}
+                  render={(props) => <Link {...props} href={props.href ?? item.href} />}
                 />
               ))}
             </SidebarSection>
