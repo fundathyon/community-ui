@@ -1,0 +1,268 @@
+/**
+ * Foundathyon Design System v2 — Design tokens.
+ *
+ * Three layers (§02 of the design system):
+ *   1. Primitives  — never consumed by components directly.
+ *   2. Semantics   — what a component is allowed to read (`--fdn-*`).
+ *   3. Component   — only when a component must deviate, always derived from a semantic.
+ *
+ * Theme model (§H-09): a single source of truth — `data-fdn-theme` on <html>
+ * with values `dark | light | system` (absent = system). Dark is the design-first
+ * theme; light is first-class and applies to the whole app, login included.
+ *
+ * Accent model (§02): a product is a hue. Each product declares
+ * `--fdn-accent-hue` + a calibrated `--fdn-accent-l` (measured ≥5:1 against
+ * white for accent-solid) and optionally `--fdn-accent-c`. Six derived tokens
+ * follow from those two numbers. The accent NEVER encodes state.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Dark theme (default — the suite is dark-first)
+ * ------------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+
+  /* -- Neutrals — hue 286, shared by the whole suite ---------------------- */
+  --fdn-bg: oklch(0.155 0.006 286);
+  --fdn-bg-subtle: oklch(0.185 0.006 286);
+  --fdn-surface: oklch(0.208 0.006 286);
+  --fdn-surface-raised: oklch(0.238 0.006 286);
+  --fdn-surface-hover: oklch(0.262 0.006 286);
+  --fdn-border: oklch(0.305 0.008 286);
+  --fdn-border-strong: oklch(0.42 0.01 286);
+  --fdn-text: oklch(0.945 0.004 286);
+  --fdn-text-secondary: oklch(0.79 0.008 286);
+  --fdn-text-muted: oklch(0.67 0.01 286);
+  --fdn-text-disabled: oklch(0.47 0.008 286);
+
+  /* -- Accent engine — product declares hue + calibrated L (+ optional C) - */
+  --fdn-accent-hue: 45; /* Foundathyon orange (Vault inherits brand) */
+  --fdn-accent-l: 0.56;
+  --fdn-accent-c: 0.17;
+  --fdn-accent-on-solid: oklch(1 0 0);
+  /* theme-scoped shifts so one (hue, L) pair works on both canvases */
+  --fdn-accent-text-shift: 0.16;
+  --fdn-accent-focus-shift: 0.16;
+  --fdn-accent-wash-alpha: 14%;
+  --fdn-accent-border-alpha: 38%;
+
+  /* derived — never override these per product */
+  --fdn-accent-solid: oklch(var(--fdn-accent-l) var(--fdn-accent-c) var(--fdn-accent-hue));
+  --fdn-accent-solid-hover: oklch(calc(var(--fdn-accent-l) - 0.06) var(--fdn-accent-c) var(--fdn-accent-hue));
+  --fdn-accent-solid-active: oklch(calc(var(--fdn-accent-l) - 0.11) var(--fdn-accent-c) var(--fdn-accent-hue));
+  --fdn-accent-text: oklch(calc(var(--fdn-accent-l) + var(--fdn-accent-text-shift)) calc(var(--fdn-accent-c) * 0.9) var(--fdn-accent-hue));
+  --fdn-accent-bg: oklch(calc(var(--fdn-accent-l) + 0.08) var(--fdn-accent-c) var(--fdn-accent-hue) / var(--fdn-accent-wash-alpha));
+  --fdn-accent-border: oklch(calc(var(--fdn-accent-l) + 0.08) var(--fdn-accent-c) var(--fdn-accent-hue) / var(--fdn-accent-border-alpha));
+  --fdn-focus: oklch(calc(var(--fdn-accent-l) + var(--fdn-accent-focus-shift)) var(--fdn-accent-c) var(--fdn-accent-hue));
+
+  /* -- Semantic tetrads — -text / -bg / -border / -solid, per theme ------- */
+  /* success · hue 150 — active, synced, protected, confirmed */
+  --fdn-success-text: oklch(0.78 0.14 150);
+  --fdn-success-bg: oklch(0.7 0.14 150 / 14%);
+  --fdn-success-border: oklch(0.7 0.14 150 / 35%);
+  --fdn-success-solid: oklch(0.54 0.14 150);
+  /* warning · hue 82 — expiring, quota, degraded config */
+  --fdn-warning-text: oklch(0.8 0.13 82);
+  --fdn-warning-bg: oklch(0.75 0.13 82 / 14%);
+  --fdn-warning-border: oklch(0.75 0.13 82 / 35%);
+  --fdn-warning-solid: oklch(0.6 0.13 82);
+  /* danger · hue 25 — failure, revocation, deletion; the only color of irreversible actions */
+  --fdn-danger-text: oklch(0.74 0.16 25);
+  --fdn-danger-bg: oklch(0.62 0.18 25 / 14%);
+  --fdn-danger-border: oklch(0.62 0.18 25 / 35%);
+  --fdn-danger-solid: oklch(0.54 0.19 25);
+  /* info · hue 245 — pending, in-progress, neutral informative (deliberately ≠ accent) */
+  --fdn-info-text: oklch(0.76 0.11 245);
+  --fdn-info-bg: oklch(0.66 0.12 245 / 14%);
+  --fdn-info-border: oklch(0.66 0.12 245 / 35%);
+  --fdn-info-solid: oklch(0.52 0.14 245);
+  --fdn-on-solid: oklch(1 0 0);
+
+  /* -- Typography (§03) — level-named 11-step scale ----------------------- */
+  --fdn-font-sans: "Inter", "Inter Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --fdn-font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* -- Radii (§05) — one base radius for the suite: 6px ------------------- */
+  --fdn-radius-sm: 0.25rem; /* 4 — checkbox, small icons */
+  --fdn-radius-md: 0.375rem; /* 6 — buttons, inputs, menu items */
+  --fdn-radius-lg: 0.5rem; /* 8 — code blocks, popovers */
+  --fdn-radius-xl: 0.75rem; /* 12 — cards, tables, modals */
+  --fdn-radius-full: 9999px; /* badges, dots, avatars, switch */
+
+  /* -- Elevation (§05) — role-bound; in dark, elevation = lighter surface + border */
+  --fdn-shadow-xs: 0 1px 2px oklch(0 0 0 / 25%);
+  --fdn-shadow-sm: 0 2px 6px oklch(0 0 0 / 28%);
+  --fdn-shadow-md: 0 4px 14px oklch(0 0 0 / 32%);
+  --fdn-shadow-lg: 0 8px 28px oklch(0 0 0 / 38%);
+  --fdn-shadow-xl: 0 16px 48px oklch(0 0 0 / 42%);
+  --fdn-z-sticky: 10;
+  --fdn-z-dropdown: 30;
+  --fdn-z-fullscreen: 45;
+  --fdn-z-modal: 50;
+  --fdn-z-toast: 55;
+  --fdn-z-command: 60; /* the ceiling of the system */
+
+  /* -- Motion (§06) ------------------------------------------------------- */
+  --fdn-dur-fast: 120ms; /* hover, pressed, color */
+  --fdn-dur-base: 180ms; /* popover, dropdown, toast */
+  --fdn-dur-slow: 260ms; /* modal, drawer, expand */
+  --fdn-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --fdn-ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --fdn-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* -- Focus (§C-02) — global 2px ring + 2px offset ----------------------- */
+  --fdn-focus-width: 2px;
+  --fdn-focus-offset: 2px;
+
+  /* -- Control heights (§04) — compact is the suite default --------------- */
+  --fdn-control-xs: 1.5rem; /* 24 — inside table cells */
+  --fdn-control-sm: 1.75rem; /* 28 — compact density default */
+  --fdn-control-md: 2rem; /* 32 — forms, dialogs */
+  --fdn-control-lg: 2.25rem; /* 36 — onboarding/login CTA, touch */
+  --fdn-control-height: var(--fdn-control-sm);
+
+  /* -- Layout dimensions (§04) -------------------------------------------- */
+  --fdn-sidebar-width: 13rem; /* 208 */
+  --fdn-sidebar-collapsed: 3rem; /* 48 */
+  --fdn-header-height: 3rem; /* 48 */
+  --fdn-container-max: 85rem; /* 1360 */
+  --fdn-prose-max: 45rem; /* 720 */
+  --fdn-modal-sm: 25rem; /* 400 */
+  --fdn-modal-md: 35rem; /* 560 */
+  --fdn-modal-lg: 47.5rem; /* 760 */
+}
+
+/* ---------------------------------------------------------------------------
+ * Light theme — explicit choice, or system preference when unset/system
+ * ------------------------------------------------------------------------- */
+:root[data-fdn-theme="light"] {
+  color-scheme: light;
+
+  --fdn-bg: oklch(0.983 0.002 286);
+  --fdn-bg-subtle: oklch(0.962 0.003 286);
+  --fdn-surface: oklch(1 0 0);
+  --fdn-surface-raised: oklch(1 0 0);
+  --fdn-surface-hover: oklch(0.958 0.003 286);
+  --fdn-border: oklch(0.905 0.004 286);
+  --fdn-border-strong: oklch(0.775 0.006 286);
+  --fdn-text: oklch(0.21 0.008 286);
+  --fdn-text-secondary: oklch(0.37 0.01 286);
+  --fdn-text-muted: oklch(0.47 0.012 286);
+  --fdn-text-disabled: oklch(0.72 0.008 286);
+
+  --fdn-accent-text-shift: -0.06;
+  --fdn-accent-focus-shift: 0;
+  --fdn-accent-wash-alpha: 11%;
+  --fdn-accent-border-alpha: 32%;
+
+  --fdn-success-text: oklch(0.47 0.13 150);
+  --fdn-success-bg: oklch(0.55 0.14 150 / 11%);
+  --fdn-success-border: oklch(0.55 0.14 150 / 30%);
+  --fdn-warning-text: oklch(0.49 0.12 82);
+  --fdn-warning-bg: oklch(0.62 0.13 82 / 13%);
+  --fdn-warning-border: oklch(0.62 0.13 82 / 32%);
+  --fdn-danger-text: oklch(0.5 0.18 25);
+  --fdn-danger-bg: oklch(0.55 0.19 25 / 10%);
+  --fdn-danger-border: oklch(0.55 0.19 25 / 30%);
+  --fdn-info-text: oklch(0.47 0.13 245);
+  --fdn-info-bg: oklch(0.55 0.13 245 / 10%);
+  --fdn-info-border: oklch(0.55 0.13 245 / 30%);
+
+  --fdn-shadow-xs: 0 1px 2px oklch(0.2 0.01 286 / 7%);
+  --fdn-shadow-sm: 0 2px 6px oklch(0.2 0.01 286 / 9%);
+  --fdn-shadow-md: 0 4px 14px oklch(0.2 0.01 286 / 11%);
+  --fdn-shadow-lg: 0 8px 28px oklch(0.2 0.01 286 / 14%);
+  --fdn-shadow-xl: 0 16px 48px oklch(0.2 0.01 286 / 16%);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-fdn-theme="dark"]):not([data-fdn-theme="light"]) {
+    color-scheme: light;
+
+    --fdn-bg: oklch(0.983 0.002 286);
+    --fdn-bg-subtle: oklch(0.962 0.003 286);
+    --fdn-surface: oklch(1 0 0);
+    --fdn-surface-raised: oklch(1 0 0);
+    --fdn-surface-hover: oklch(0.958 0.003 286);
+    --fdn-border: oklch(0.905 0.004 286);
+    --fdn-border-strong: oklch(0.775 0.006 286);
+    --fdn-text: oklch(0.21 0.008 286);
+    --fdn-text-secondary: oklch(0.37 0.01 286);
+    --fdn-text-muted: oklch(0.47 0.012 286);
+    --fdn-text-disabled: oklch(0.72 0.008 286);
+
+    --fdn-accent-text-shift: -0.06;
+    --fdn-accent-focus-shift: 0;
+    --fdn-accent-wash-alpha: 11%;
+    --fdn-accent-border-alpha: 32%;
+
+    --fdn-success-text: oklch(0.47 0.13 150);
+    --fdn-success-bg: oklch(0.55 0.14 150 / 11%);
+    --fdn-success-border: oklch(0.55 0.14 150 / 30%);
+    --fdn-warning-text: oklch(0.49 0.12 82);
+    --fdn-warning-bg: oklch(0.62 0.13 82 / 13%);
+    --fdn-warning-border: oklch(0.62 0.13 82 / 32%);
+    --fdn-danger-text: oklch(0.5 0.18 25);
+    --fdn-danger-bg: oklch(0.55 0.19 25 / 10%);
+    --fdn-danger-border: oklch(0.55 0.19 25 / 30%);
+    --fdn-info-text: oklch(0.47 0.13 245);
+    --fdn-info-bg: oklch(0.55 0.13 245 / 10%);
+    --fdn-info-border: oklch(0.55 0.13 245 / 30%);
+
+    --fdn-shadow-xs: 0 1px 2px oklch(0.2 0.01 286 / 7%);
+    --fdn-shadow-sm: 0 2px 6px oklch(0.2 0.01 286 / 9%);
+    --fdn-shadow-md: 0 4px 14px oklch(0.2 0.01 286 / 11%);
+    --fdn-shadow-lg: 0 8px 28px oklch(0.2 0.01 286 / 14%);
+    --fdn-shadow-xl: 0 16px 48px oklch(0.2 0.01 286 / 16%);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Product accent presets (§02) — a product = a hue.
+ * Apply with `data-fdn-product` on <html> or any subtree, or set the two
+ * variables yourself (e.g. via FoundathyonProvider).
+ * ------------------------------------------------------------------------- */
+[data-fdn-product="vault"] {
+  --fdn-accent-hue: 45;
+  --fdn-accent-l: 0.56;
+  --fdn-accent-c: 0.17;
+}
+/* NOTE(DS §02): hue 62 is only 17° from Vault — below the 40° minimum.
+ * Kept for continuity; migrate to 125 or 210 in the next minor. */
+[data-fdn-product="dokgistry"] {
+  --fdn-accent-hue: 62;
+  --fdn-accent-l: 0.55;
+  --fdn-accent-c: 0.17;
+}
+[data-fdn-product="accounts"] {
+  --fdn-accent-hue: 195;
+  --fdn-accent-l: 0.55;
+  --fdn-accent-c: 0.105; /* cyan has less chroma available in sRGB: lower C, not L */
+}
+[data-fdn-product="cronify"] {
+  --fdn-accent-hue: 165;
+  --fdn-accent-l: 0.51; /* green needs −5 L for the same contrast */
+  --fdn-accent-c: 0.14;
+}
+[data-fdn-product="mocky"] {
+  --fdn-accent-hue: 300;
+  --fdn-accent-l: 0.56;
+  --fdn-accent-c: 0.17;
+}
+
+/* ---------------------------------------------------------------------------
+ * Density (§08) — compact (28px controls) for fine pointers is the default;
+ * comfortable (36px) opt-in via attribute; coarse pointers get comfortable
+ * automatically unless a density was explicitly chosen.
+ * ------------------------------------------------------------------------- */
+[data-fdn-density="comfortable"] {
+  --fdn-control-height: var(--fdn-control-lg);
+}
+[data-fdn-density="compact"] {
+  --fdn-control-height: var(--fdn-control-sm);
+}
+@media (pointer: coarse) {
+  :root:not([data-fdn-density]) {
+    --fdn-control-height: var(--fdn-control-lg);
+  }
+}
