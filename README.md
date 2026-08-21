@@ -24,11 +24,11 @@ committed on release tags.
 ```jsonc
 // package.json
 "dependencies": {
-  "@foundathyon/community-ui": "github:foundathyon/community-ui#semver:^0.1.0"
+  "@foundathyon/community-ui": "github:fundathyon/community-ui#semver:^0.2.0"
 }
 ```
 
-Pinning styles: `#v0.1.0` (exact tag) or `#semver:^0.1.0` (range over tags —
+Pinning styles: `#v0.2.0` (exact tag) or `#semver:^0.2.0` (range over tags —
 closest to `go get`). Private repo? Each environment needs read access to the
 repo (SSH deploy key or a PAT via git config), same as `GOPRIVATE` + `.netrc`.
 
