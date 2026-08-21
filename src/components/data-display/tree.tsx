@@ -210,7 +210,9 @@ export function Tree({
           }}
           onClick={onClick}
           className={cn(
-            "cursor-pointer rounded-md outline-none",
+            "cursor-pointer rounded-md",
+            // No `outline-none`: see status-indicator.tsx for why it would
+            // poison the `--tw-outline-style` this rule depends on.
             "focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus",
             node.disabled && "cursor-not-allowed opacity-45",
           )}

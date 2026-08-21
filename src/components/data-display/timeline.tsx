@@ -112,7 +112,9 @@ export function TimelineItem({ marker, title, meta, className, children, ...prop
           <Collapsible.Root>
             <Collapsible.Trigger
               className={cn(
-                "group flex w-full items-center gap-1.5 rounded-md text-left outline-none",
+                "group flex w-full items-center gap-1.5 rounded-md text-left",
+                // No `outline-none`: see status-indicator.tsx for why it would
+                // poison the `--tw-outline-style` this rule depends on.
                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
               )}
             >

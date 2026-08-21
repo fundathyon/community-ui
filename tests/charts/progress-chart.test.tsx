@@ -27,6 +27,6 @@ describe("ProgressChart", () => {
 
   it("derives empty when max is not positive", () => {
     render(<ProgressChart label="Cuota" value={0} max={0} />);
-    expect(screen.getByText("Sin datos en este intervalo")).toBeInTheDocument();
+    expect(screen.getByText("No data in this interval")).toBeInTheDocument();
   });
 });

@@ -49,6 +49,6 @@ describe("DonutChart — donut variant", () => {
         segments={[{ name: "A", value: 0 }, { name: "B", value: 0 }]}
       />,
     );
-    expect(screen.getByText("Sin datos en este intervalo")).toBeInTheDocument();
+    expect(screen.getByText("No data in this interval")).toBeInTheDocument();
   });
 });

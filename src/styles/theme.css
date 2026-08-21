@@ -148,4 +148,7 @@
   --spacing-modal-sm: var(--fdn-modal-sm);
   --spacing-modal-md: var(--fdn-modal-md);
   --spacing-modal-lg: var(--fdn-modal-lg);
+  --spacing-drawer-sm: var(--fdn-drawer-sm);
+  --spacing-drawer-md: var(--fdn-drawer-md);
+  --spacing-drawer-lg: var(--fdn-drawer-lg);
 }

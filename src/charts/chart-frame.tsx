@@ -26,7 +26,7 @@ export interface ChartFrameProps {
   height: number;
   /** Lifecycle. Omit or `"ready"` to render `children`. */
   state?: ChartState;
-  /** Copy for the no-data state. @default "Sin datos en este intervalo" */
+  /** Copy for the no-data state. @default "No data in this interval" */
   emptyLabel?: string;
   /** Error-state copy + exit. */
   errorTitle?: string;

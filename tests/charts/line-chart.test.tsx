@@ -20,7 +20,7 @@ describe("LineChart", () => {
   it("derives the empty state when no series has a real value (§22)", () => {
     const allNull: ChartSeries[] = [{ name: "Logins", data: [{ x: "00:00", y: null }, { x: "01:00", y: null }] }];
     render(<LineChart label="Logins" series={allNull} width={600} height={200} />);
-    expect(screen.getByText("Sin datos en este intervalo")).toBeInTheDocument();
+    expect(screen.getByText("No data in this interval")).toBeInTheDocument();
   });
 
   it("adds the partial-data note when a series has a gap (null y)", () => {

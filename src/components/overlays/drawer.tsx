@@ -45,9 +45,9 @@ export type DrawerSize = "sm" | "md" | "lg";
 
 /** sm 360 · md 420 (§13 default) · lg 560 — via max-width, so small screens stay fluid. */
 const sizeClasses: Record<DrawerSize, string> = {
-  sm: "sm:max-w-[360px]",
-  md: "sm:max-w-[420px]",
-  lg: "sm:max-w-[560px]",
+  sm: "sm:max-w-drawer-sm",
+  md: "sm:max-w-drawer-md",
+  lg: "sm:max-w-drawer-lg",
 };
 
 const sideClasses: Record<DrawerSide, string> = {

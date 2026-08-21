@@ -78,7 +78,7 @@ export interface BaseCartesianChartProps {
   xTickFormat?: (value: string | number | Date) => string;
   /** y tick + value formatter (defaults to grouped integer). */
   yTickFormat?: (value: number) => string;
-  /** Overridable no-data copy. @default "Sin datos en este intervalo" */
+  /** Overridable no-data copy. @default "No data in this interval" */
   emptyLabel?: string;
   /** Overridable partial-data note builder. */
   partialNote?: (missing: number, total: number) => string;

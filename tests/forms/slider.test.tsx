@@ -62,4 +62,16 @@ describe("Slider", () => {
     rerender(<Slider aria-label="R" value={60} onValueChange={() => {}} />);
     expect(screen.getByRole("textbox", { name: "Value" })).toHaveValue("60");
   });
+
+  it("silences the nested native input's own ring so it never doubles the thumb's (§C-02)", () => {
+    render(<Slider aria-label="Retención" defaultValue={30} />);
+    const thumbInput = screen.getByRole("slider");
+    // Base UI nests this <input type="range"> directly inside the Thumb div
+    // that paints the ring via `focus-within`. The input itself carries no
+    // outline class of its own — suppression is a `[&_input]:outline-none`
+    // descendant selector on the Thumb div; without it the input paints a
+    // second, near-identical ring on top of the wrapper's when focused.
+    expect(thumbInput.parentElement?.className).toMatch(/\[&_input\]:outline-none/);
+    expect(thumbInput.parentElement?.className).toMatch(/focus-within:outline\b/);
+  });
 });

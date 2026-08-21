@@ -24,7 +24,7 @@ describe("ChartFrame — the four shared chart states (§22)", () => {
         {child}
       </ChartFrame>,
     );
-    expect(screen.getByText("Sin datos en este intervalo")).toBeInTheDocument();
+    expect(screen.getByText("No data in this interval")).toBeInTheDocument();
     expect(screen.queryByTestId("plot")).not.toBeInTheDocument();
 
     rerender(
@@ -44,7 +44,7 @@ describe("ChartFrame — the four shared chart states (§22)", () => {
       </ChartFrame>,
     );
     expect(screen.getByRole("alert")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await user.click(screen.getByRole("button", { name: "Retry" }));
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 

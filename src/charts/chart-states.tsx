@@ -19,14 +19,14 @@ import { Icon } from "../components/typography/icon";
 
 /** Default copy — English, overridable by the owning chart's props (CONVENTIONS
  * language rule; §22 wording for the no-data case). */
-export const DEFAULT_EMPTY_LABEL = "Sin datos en este intervalo";
-export const DEFAULT_ERROR_TITLE = "No se pudo cargar el gráfico";
-export const DEFAULT_RETRY_LABEL = "Reintentar";
+export const DEFAULT_EMPTY_LABEL = "No data in this interval";
+export const DEFAULT_ERROR_TITLE = "Couldn't load the chart";
+export const DEFAULT_RETRY_LABEL = "Retry";
 
 /** Loading — a Skeleton block the exact height of the chart (§22). The Skeleton
  * is decorative (`aria-hidden`), so a `role="status"` wrapper announces the wait
  * once (the SkeletonGroup pattern), not the bone itself. */
-export function ChartLoading({ height, label = "Cargando…" }: { height: number; label?: string }) {
+export function ChartLoading({ height, label = "Loading…" }: { height: number; label?: string }) {
   return (
     <div role="status" aria-busy="true" aria-label={label} className="w-full" style={{ height }}>
       <Skeleton className="h-full w-full" />

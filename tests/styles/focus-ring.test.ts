@@ -23,16 +23,9 @@ describe("global focus ring", () => {
 
   it("never declares :focus-visible with an outline at the top level (unlayered)", () => {
     // Strip every @layer block, then assert no bare :focus-visible{outline…} remains.
-    let depth = 0;
-    let unlayered = "";
-    // Walk char-by-char tracking @layer nesting to collect only top-level text.
-    const layerOpen = /@layer[^{]*\{/g;
-    // Simplest robust check: the only :focus-visible outline rule must be preceded
-    // (in the same file) by `@layer base` and not appear outside any layer.
+    // The only :focus-visible outline rule must be preceded (in the same file) by
+    // `@layer base` and not appear outside any layer.
     const withoutLayers = base.replace(/@layer[^{]*\{(?:[^{}]|\{[^{}]*\})*\}/g, "");
     expect(withoutLayers).not.toMatch(/:focus-visible\s*\{[^}]*outline/);
-    void depth;
-    void unlayered;
-    void layerOpen;
   });
 });

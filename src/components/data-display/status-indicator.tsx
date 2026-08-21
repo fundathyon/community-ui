@@ -60,7 +60,11 @@ export function StatusIndicator({ status, treatment, label, className }: StatusI
           aria-label={accessible}
           data-status={status}
           className={cn(
-            "inline-flex items-center justify-center rounded-sm outline-none",
+            "inline-flex items-center justify-center rounded-sm",
+            // No `outline-none`: it would share `--tw-outline-style` with the
+            // rule below and pin it to "none" even when focus-visible matches
+            // (Tailwind v4 outline utilities compose via that one custom
+            // property) — `@layer utilities` already beats the base.css default.
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
             TONE_TEXT[tone],
             className,

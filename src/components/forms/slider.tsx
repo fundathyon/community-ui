@@ -110,6 +110,12 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
               getAriaLabel={ariaLabel ? () => ariaLabel : undefined}
               className={cn(
                 "size-3.5 rounded-full border border-border-strong bg-surface shadow-xs",
+                // Base UI nests a real `<input type="range">` inside this div and
+                // exposes no prop to className it directly (SliderThumb.d.mts).
+                // The ring is delegated to this wrapper via `focus-within`, so the
+                // nested input's own native ring must be silenced — same
+                // wrapper-delegates-the-ring contract as Input/Combobox/etc.
+                "[&_input]:outline-none",
                 "focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus",
                 disabled && "cursor-not-allowed",
               )}

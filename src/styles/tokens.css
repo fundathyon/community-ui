@@ -130,6 +130,9 @@
   --fdn-modal-sm: 25rem; /* 400 */
   --fdn-modal-md: 35rem; /* 560 */
   --fdn-modal-lg: 47.5rem; /* 760 */
+  --fdn-drawer-sm: 22.5rem; /* 360 */
+  --fdn-drawer-md: 26.25rem; /* 420 — §13 default */
+  --fdn-drawer-lg: 35rem; /* 560 */
 }
 
 /* ---------------------------------------------------------------------------

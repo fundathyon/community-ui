@@ -6,6 +6,12 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
    * Fully clickable card: surface hover + focus ring when its inner link is
    * focused. The card's TITLE is the real link — the card itself never gets
    * an onClick (§15).
+   *
+   * The ring is delegated to this wrapper via `focus-within`, exactly like
+   * Input/Combobox/Slider — which means the real link YOU render as the
+   * title must carry `className="outline-none"` (or `cn(..., "outline-none")`)
+   * itself, or it will paint its own native focus ring on top of the card's
+   * and double it (§C-02).
    */
   interactive?: boolean;
 }

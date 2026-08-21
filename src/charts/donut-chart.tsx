@@ -39,7 +39,7 @@ export interface DonutChartProps {
   /** Value formatter for the legend/table. @default grouped integer. */
   valueFormat?: (value: number) => string;
   emptyLabel?: string;
-  /** Header for the category column of the hidden table. @default "Categoría" */
+  /** Header for the category column of the hidden table. @default "Category" */
   categoryLabel?: string;
   viewDataLabel?: string;
   onViewData?: () => void;
@@ -72,7 +72,7 @@ export function DonutChart({
   centerLabel,
   valueFormat,
   emptyLabel,
-  categoryLabel = "Categoría",
+  categoryLabel = "Category",
   viewDataLabel,
   onViewData,
   width,

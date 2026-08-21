@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "../../lib/cn";
+import { FOCUS_RING_INSET } from "../../lib/focus";
 import { Icon } from "../typography/icon";
 
 export interface CommandItem {
@@ -215,7 +216,21 @@ export function CommandPalette({
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck={false}
-              className="h-11 w-full bg-transparent text-body text-text outline-none placeholder:text-text-muted"
+              className={cn(
+                // No `outline-none` here: Tailwind v4's outline utilities share
+                // one `--tw-outline-style` custom property, so an unconditional
+                // `outline-none` on this SAME element would poison it and leave
+                // `focus-visible:outline` below permanently resolving to `none`
+                // — the ring would never render at all, focused or not. `@layer
+                // utilities` already beats base.css's global ring unconditionally,
+                // so no reset is needed before applying this inset override.
+                "h-11 w-full bg-transparent text-body text-text placeholder:text-text-muted",
+                // Inset (§C-02): this row sits flush against the palette's own
+                // rounded top edge, so a normal positive-offset ring would clip
+                // against the dialog's overflow — never suppressed without a
+                // substitute, per the same rule base.css's global ring exists for.
+                FOCUS_RING_INSET,
+              )}
             />
           </div>
           <div className="flex-1 overflow-y-auto overscroll-contain p-1" role="listbox" id={listId} aria-label={label}>

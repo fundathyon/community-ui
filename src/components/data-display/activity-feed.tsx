@@ -64,7 +64,9 @@ function CopyableToken({ prefix, value }: { prefix?: string; value: string }) {
       type="button"
       onClick={() => copy(value)}
       className={cn(
-        "inline-flex items-center gap-1 rounded-sm outline-none transition-colors hover:text-text-secondary",
+        "inline-flex items-center gap-1 rounded-sm transition-colors hover:text-text-secondary",
+        // No `outline-none`: see status-indicator.tsx for why it would poison
+        // the `--tw-outline-style` this focus-visible rule depends on.
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
       )}
       title={`Copy ${value}`}
@@ -157,7 +159,9 @@ export function ActivityFeedItem({
           <Collapsible.Root className="mt-1.5">
             <Collapsible.Trigger
               className={cn(
-                "group inline-flex items-center gap-1 rounded-sm text-caption text-text-muted outline-none transition-colors hover:text-text-secondary",
+                "group inline-flex items-center gap-1 rounded-sm text-caption text-text-muted transition-colors hover:text-text-secondary",
+                // No `outline-none`: see status-indicator.tsx for why it would
+                // poison the `--tw-outline-style` this rule depends on.
                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
               )}
             >

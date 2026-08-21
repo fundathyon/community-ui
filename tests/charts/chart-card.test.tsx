@@ -34,7 +34,7 @@ describe("ChartCard", () => {
       </ChartCard>,
     );
     expect(screen.getByRole("alert")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    await user.click(screen.getByRole("button", { name: "Retry" }));
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 });

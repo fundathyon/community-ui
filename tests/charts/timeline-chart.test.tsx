@@ -44,6 +44,6 @@ describe("TimelineChart", () => {
 
   it("derives empty with no segments", () => {
     render(<TimelineChart label="Salud" segments={[]} />);
-    expect(screen.getByText("Sin datos en este intervalo")).toBeInTheDocument();
+    expect(screen.getByText("No data in this interval")).toBeInTheDocument();
   });
 });
