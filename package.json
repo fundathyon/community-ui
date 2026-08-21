@@ -1,6 +1,6 @@
 {
   "name": "@foundathyon/community-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Foundathyon Community UI — the official implementation of the Foundathyon Design System (v2) for React/Next.js + Tailwind CSS. One design system. Many products. One implementation.",
   "type": "module",
   "license": "UNLICENSED",
