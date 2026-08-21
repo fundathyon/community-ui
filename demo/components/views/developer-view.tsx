@@ -157,7 +157,7 @@ export function DeveloperView() {
         <Grid min="20rem" gap={4}>
           <Stack gap={2}>
             <Text variant="label" tone="secondary">Clave de servicio</Text>
-            <Secret value="sk_live_de96f0c2a1b34d5e6f7089abcdef012345" revealable copy prefix={11} suffix={4} revealLabel="Revelar" />
+            <Secret value="fdn_live_de96f0c2a1b34d5e6f7089abcdef012345" revealable copy prefix={12} suffix={4} revealLabel="Revelar" />
           </Stack>
           <Stack gap={2}>
             <Text variant="label" tone="secondary">Digest de la imagen</Text>
