@@ -1,0 +1,291 @@
+"use client";
+
+import { Dialog as BaseDialog } from "@base-ui/react/dialog";
+import { Search } from "lucide-react";
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from "react";
+import { cn } from "../../lib/cn";
+import { Icon } from "../typography/icon";
+
+export interface CommandItem {
+  id: string;
+  label: string;
+  /** Leading icon, e.g. `<Icon icon={Boxes} size={16} />`. */
+  icon?: ReactNode;
+  /** Right-aligned shortcut hint ("G R", "⌘T"). Purely visual. */
+  shortcut?: string;
+  /** Extra strings the filter matches besides the label. */
+  keywords?: string[];
+  onSelect?: () => void;
+}
+
+export interface CommandGroup {
+  /** Same categories in every product (§16): "Ir a", "Acciones", "Recientes". */
+  heading: string;
+  items: CommandItem[];
+}
+
+export interface CommandPaletteProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  items: CommandGroup[];
+  /** Search input placeholder. It also serves as the input's accessible name. */
+  placeholder?: string;
+  /**
+   * Heading of the recents group (§16 "Recientes"). That group is only shown
+   * while the query is empty — recents never match a search.
+   */
+  recentLabel?: string;
+  /** Fires after the item's own `onSelect`; the palette closes afterwards. */
+  onSelect?: (item: CommandItem) => void;
+  /** "No results" slot — a filtered-empty state, distinct from empty (§C-03). */
+  emptyMessage?: ReactNode;
+  /** Accessible name of the dialog. Default "Command menu" — always overridable. */
+  label?: string;
+}
+
+/** Case- and diacritic-insensitive normalization for filtering. */
+function normalize(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+interface FlatOption {
+  item: CommandItem;
+  /** Index into the flattened, filtered option list. */
+  index: number;
+}
+
+/**
+ * CommandPalette — the ⌘K command menu (§16), identical in every product and
+ * with the same categories: "Ir a", "Acciones", "Recientes". Every new product
+ * action is registered here besides its screen. Renders at `fdn-z-command`,
+ * the ceiling of the system (§05), top-aligned at 20vh.
+ *
+ * The list follows the combobox pattern: the input keeps focus and owns
+ * `aria-activedescendant`; ArrowUp/Down move (wrapping), Enter selects, Esc
+ * closes. Filtering is case- and diacritic-insensitive over label + keywords.
+ *
+ * Pair it with `useCommandPalette()` for the global ⌘K / Ctrl+K shortcut:
+ *
+ * ```tsx
+ * const palette = useCommandPalette();
+ * <CommandPalette open={palette.open} onOpenChange={palette.setOpen} items={groups} />
+ * ```
+ */
+export function CommandPalette({
+  open,
+  onOpenChange,
+  items,
+  placeholder = "Type a command or search…",
+  recentLabel,
+  onSelect,
+  emptyMessage = "No results",
+  label = "Command menu",
+}: CommandPaletteProps) {
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const baseId = useId();
+  const listId = `${baseId}-list`;
+
+  // Fresh state on every open, before paint so the previous query never flashes.
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setActiveIndex(0);
+    }
+  }, [open]);
+
+  const filtered = useMemo(() => {
+    const q = normalize(query.trim());
+    const groups: { heading: string; options: FlatOption[] }[] = [];
+    let index = 0;
+    for (const group of items) {
+      // Recents are only offered while the query is empty (§16).
+      if (q !== "" && recentLabel !== undefined && group.heading === recentLabel) continue;
+      const matches = group.items.filter((item) => {
+        if (q === "") return true;
+        const haystack = [item.label, ...(item.keywords ?? [])];
+        return haystack.some((text) => normalize(text).includes(q));
+      });
+      if (matches.length === 0) continue;
+      groups.push({ heading: group.heading, options: matches.map((item) => ({ item, index: index++ })) });
+    }
+    return groups;
+  }, [items, query, recentLabel]);
+
+  const flat = useMemo(() => filtered.flatMap((group) => group.options), [filtered]);
+  const activeIdx = flat.length === 0 ? -1 : Math.min(activeIndex, flat.length - 1);
+  const optionId = (item: CommandItem) => `${baseId}-option-${item.id}`;
+  const activeItem = activeIdx === -1 ? undefined : flat[activeIdx]?.item;
+  const activeId = activeItem ? optionId(activeItem) : undefined;
+
+  useEffect(() => {
+    if (activeId && typeof document !== "undefined") {
+      document.getElementById(activeId)?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeId]);
+
+  const select = (item: CommandItem) => {
+    item.onSelect?.();
+    onSelect?.(item);
+    onOpenChange(false);
+  };
+
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (flat.length === 0) return;
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        setActiveIndex((activeIdx + 1) % flat.length);
+        break;
+      case "ArrowUp":
+        event.preventDefault();
+        setActiveIndex((activeIdx - 1 + flat.length) % flat.length);
+        break;
+      case "Home":
+        event.preventDefault();
+        setActiveIndex(0);
+        break;
+      case "End":
+        event.preventDefault();
+        setActiveIndex(flat.length - 1);
+        break;
+      case "Enter":
+        if (event.nativeEvent.isComposing) return;
+        event.preventDefault();
+        if (activeItem) select(activeItem);
+        break;
+      default:
+        break;
+    }
+  };
+
+  return (
+    <BaseDialog.Root open={open} onOpenChange={onOpenChange}>
+      <BaseDialog.Portal>
+        <BaseDialog.Backdrop
+          className={cn(
+            "fixed inset-0 fdn-z-command bg-black/60",
+            "transition-opacity duration-[var(--fdn-dur-base)] ease-[var(--fdn-ease-standard)]",
+            "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
+          )}
+        />
+        <BaseDialog.Popup
+          aria-label={label}
+          initialFocus={inputRef}
+          className={cn(
+            // top-aligned, never centered: the list grows downward (§16)
+            "fixed inset-x-4 top-[20vh] fdn-z-command mx-auto flex max-h-[60vh] flex-col overflow-hidden",
+            "rounded-xl border border-border bg-surface-raised shadow-xl",
+            "sm:inset-x-0 sm:w-full sm:max-w-modal-md",
+            "transition-[opacity,transform] duration-[var(--fdn-dur-slow)] ease-[var(--fdn-ease-enter)]",
+            "data-[starting-style]:translate-y-1 data-[starting-style]:opacity-0",
+            "data-[ending-style]:opacity-0",
+          )}
+        >
+          <div className="flex shrink-0 items-center gap-2 border-b border-border px-3">
+            <Icon icon={Search} size={16} className="text-text-muted" />
+            <input
+              ref={inputRef}
+              role="combobox"
+              aria-expanded={true}
+              aria-controls={listId}
+              aria-activedescendant={activeId}
+              aria-autocomplete="list"
+              aria-label={placeholder}
+              placeholder={placeholder}
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setActiveIndex(0);
+              }}
+              onKeyDown={handleKeyDown}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              className="h-11 w-full bg-transparent text-body text-text outline-none placeholder:text-text-muted"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto overscroll-contain p-1" role="listbox" id={listId} aria-label={label}>
+            {filtered.map((group, groupIndex) => {
+              // ids must not contain the heading text (spaces break aria-labelledby)
+              const headingId = `${baseId}-group-${groupIndex}`;
+              return (
+                <div key={group.heading} role="group" aria-labelledby={headingId}>
+                  <div id={headingId} role="presentation" className="px-2 pb-1 pt-2 text-overline text-text-muted">
+                    {group.heading}
+                  </div>
+                  {group.options.map(({ item, index }) => (
+                    <div
+                      key={item.id}
+                      id={optionId(item)}
+                      role="option"
+                      aria-selected={index === activeIdx}
+                      className={cn(
+                        "flex cursor-default select-none items-center gap-2 rounded-md px-2 py-1.5 text-body text-text",
+                        index === activeIdx && "bg-surface-hover",
+                      )}
+                      onMouseMove={() => setActiveIndex(index)}
+                      // keep focus on the combobox input while clicking options
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => select(item)}
+                    >
+                      {item.icon && (
+                        <span className="flex shrink-0 items-center text-text-muted [&_svg]:size-4">{item.icon}</span>
+                      )}
+                      <span className="min-w-0 truncate">{item.label}</span>
+                      {item.shortcut && (
+                        <kbd className="ml-auto shrink-0 rounded-sm border border-border bg-bg-subtle px-1 font-sans text-caption text-text-secondary">
+                          {item.shortcut}
+                        </kbd>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+          {flat.length === 0 && (
+            <div role="status" className="shrink-0 px-3 pb-8 pt-4 text-center text-body text-text-secondary">
+              {emptyMessage}
+            </div>
+          )}
+        </BaseDialog.Popup>
+      </BaseDialog.Portal>
+    </BaseDialog.Root>
+  );
+}
+
+/**
+ * Global ⌘K / Ctrl+K state for the CommandPalette (§16 — the shortcut is
+ * identical across the suite and no product may reassign it). Registers a
+ * window keydown listener that toggles the palette; cleaned up on unmount.
+ */
+export function useCommandPalette(): { open: boolean; setOpen: (open: boolean) => void } {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && (event.key === "k" || event.key === "K")) {
+        event.preventDefault();
+        setOpen((previous) => !previous);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  return { open, setOpen };
+}
