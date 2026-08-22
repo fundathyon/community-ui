@@ -42,16 +42,16 @@ export function Table({ stickyHeader, className, children, tableProps, ...props 
 }
 
 /**
- * TableHeader — the `<thead>`. Header cells use the overline-ish treatment
- * (`text-label`, muted, medium). Sticks to the top when the parent Table has
- * `stickyHeader` (via the `group-data-[sticky]` marker).
+ * TableHeader — the `<thead>`. Header cells use the overline treatment
+ * (uppercase, tracked, muted — §14). Sticks to the top when the parent Table
+ * has `stickyHeader` (via the `group-data-[sticky]` marker).
  */
 export function TableHeader({ className, ...props }: HTMLAttributes<HTMLTableSectionElement>) {
   return (
     <thead
       className={cn(
-        "bg-bg-subtle",
-        "group-data-[sticky]:sticky group-data-[sticky]:top-0 group-data-[sticky]:fdn-z-sticky group-data-[sticky]:bg-surface group-data-[sticky]:shadow-sm",
+        "bg-surface",
+        "group-data-[sticky]:sticky group-data-[sticky]:top-0 group-data-[sticky]:fdn-z-sticky group-data-[sticky]:shadow-sm",
         className,
       )}
       {...props}
@@ -83,7 +83,7 @@ export function TableRow({
     <tr
       data-state={selected ? "selected" : undefined}
       className={cn(
-        "border-b border-border last:border-0",
+        "group/row border-b border-border last:border-0",
         interactive && "cursor-pointer hover:bg-surface-hover",
         selected && "bg-accent-bg",
         terminal && "opacity-60",
@@ -98,12 +98,13 @@ export interface TableHeadProps extends ThHTMLAttributes<HTMLTableCellElement> {
   align?: "left" | "right";
 }
 
+/** Column header — overline caps, muted (§14 "cabecera en overline"). */
 export function TableHead({ align = "left", className, ...props }: TableHeadProps) {
   return (
     <th
       scope="col"
       className={cn(
-        "h-9 whitespace-nowrap px-3 text-label font-medium text-text-muted",
+        "h-10 whitespace-nowrap px-3 text-overline uppercase text-text-muted",
         align === "right" ? "text-right" : "text-left",
         className,
       )}

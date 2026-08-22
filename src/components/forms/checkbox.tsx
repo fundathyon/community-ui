@@ -57,7 +57,7 @@ export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox
           <Icon icon={indeterminate ? Minus : Check} size={12} />
         </BaseCheckbox.Indicator>
       </BaseCheckbox.Root>
-      <span className="flex min-w-0 flex-col gap-0.5">
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span id={labelId} className="text-label text-text">
           {label}
         </span>

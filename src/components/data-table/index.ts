@@ -19,11 +19,15 @@ export {
 // The full data table machine.
 export { DataTable, type DataTableProps } from "./data-table";
 
-// Column-visibility toolbar helper.
+// Toolbar helpers: column visibility and faceted filters.
 export {
   DataTableColumnsButton,
   type DataTableColumnsButtonProps,
 } from "./columns-button";
+export {
+  DataTableFilterButton,
+  type DataTableFilterButtonProps,
+} from "./filter-button";
 
 // Public type surface (no TanStack types).
 export type {
@@ -34,6 +38,8 @@ export type {
   DataTableEmptyStateConfig,
   DataTableErrorConfig,
   DataTableExpandable,
+  DataTableFilterOption,
+  DataTableGroupBy,
   DataTableHideBelow,
   DataTableLabels,
   DataTableNoResultsConfig,

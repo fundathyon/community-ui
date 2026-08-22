@@ -1,6 +1,7 @@
 "use client";
 
-import { Columns3 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { Size } from "../../lib/types";
 import { Button } from "../actions/button";
 import {
   DropdownMenu,
@@ -21,11 +22,14 @@ export interface DataTableColumnsButtonProps<TData> {
   label?: string;
   /** Columns that may not be toggled off (e.g. the primary column). */
   lockedIds?: string[];
+  /** Optional leading icon — the §14 toolbar renders the plain word. */
+  icon?: LucideIcon;
+  size?: Size;
 }
 
 /**
- * DataTableColumnsButton — the "Columns" toggle for a DataTable's toolbar (§21).
- * Wire the same visibility state to both this button and the table's
+ * DataTableColumnsButton — the "Columns" toggle for a DataTable's toolbar (§14,
+ * §21). Wire the same visibility state to both this button and the table's
  * `columnVisibility` prop; the app owns where the trigger sits. Menu items are
  * checkbox items that stay open on toggle (§12).
  *
@@ -38,13 +42,15 @@ export function DataTableColumnsButton<TData>({
   onChange,
   label = "Columns",
   lockedIds,
+  icon,
+  size,
 }: DataTableColumnsButtonProps<TData>) {
   const locked = new Set(lockedIds ?? []);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="secondary" leading={<Icon icon={Columns3} size={16} />}>
+          <Button variant="secondary" size={size} leading={icon ? <Icon icon={icon} size={14} /> : undefined}>
             {label}
           </Button>
         }

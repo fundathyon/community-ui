@@ -141,6 +141,35 @@ import { DocsLayout, Note } from "@foundathyon/community-ui/docs";
 import { OtpEmail, renderEmail } from "@foundathyon/community-ui/email";
 ```
 
+A list page is one `DataTable` frame (§14): the toolbar (search · faceted
+filters · Columns, with the selection summary and bulk actions on its trailing
+side), the table, and the footer with the "3 de 128" summary, an optional
+caption and the pagination. The app composes the toolbar and keeps the filter
+state in the URL (§16):
+
+```tsx
+<DataTable
+  columns={columns}
+  data={rows}
+  rowId={(row) => row.id}
+  globalFilter={query}
+  enableSelection
+  groupBy={grouped ? { key: (row) => row.role } : undefined}
+  toolbar={
+    <>
+      <SearchInput value={query} onValueChange={setQuery} placeholder="Filtrar imágenes…" />
+      <DataTableFilterButton label="Estado" options={STATUS_OPTIONS} value={status} onChange={setStatus} />
+      <DataTableColumnsButton columns={columns} value={visibility} onChange={setVisibility} label="Columnas" />
+    </>
+  }
+  bulkActions={(selected) => (
+    <Button variant="destructive-subtle" onClick={() => confirmDelete(selected)}>Eliminar selección</Button>
+  )}
+  footer="Fila terminal a 0.6 de opacidad · tabular-nums en toda cifra comparable"
+  labels={{ of: (shown, total) => `${shown} de ${total} imágenes`, selectedCount: (n) => `${n} seleccionada${n === 1 ? "" : "s"}` }}
+/>
+```
+
 Entry points:
 
 | Entry | Contents |
