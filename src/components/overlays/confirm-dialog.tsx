@@ -166,11 +166,12 @@ export function ConfirmDialog({
             </div>
           )}
           <div className="flex items-center justify-end gap-2 pt-1">
-            <Button ref={cancelRef} variant="ghost" disabled={pending} onClick={() => handleOpenChange(false)}>
+            <Button ref={cancelRef} variant="ghost" size="lg" disabled={pending} onClick={() => handleOpenChange(false)}>
               {cancelLabel}
             </Button>
             <Button
               variant={tone === "danger" ? "destructive" : "primary"}
+              size="lg"
               disabled={confirmBlocked}
               loading={pending}
               onClick={handleConfirm}

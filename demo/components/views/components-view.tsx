@@ -231,7 +231,7 @@ export function ComponentsView() {
       <Section title="Overlays y confirmaciones">
         <Inline gap={2} wrap align="center">
           <Dialog>
-            <DialogTrigger render={<Button variant="primary">Nuevo enlace compartido</Button>} />
+            <DialogTrigger render={<Button variant="primary" size="lg">Nuevo enlace compartido</Button>} />
             <DialogContent size="sm">
               <DialogHeader>
                 <DialogTitle>Nuevo enlace compartido</DialogTitle>
@@ -256,7 +256,7 @@ export function ComponentsView() {
           </Dialog>
 
           <Drawer>
-            <DrawerTrigger render={<Button variant="secondary" leading={<Package size={14} />}>Detalle del tag</Button>} />
+            <DrawerTrigger render={<Button variant="secondary" size="lg" leading={<Package size={14} />}>Detalle del tag</Button>} />
             <DrawerContent size="md">
               <DrawerHeader>
                 <DrawerTitle>library/nginx:1.27</DrawerTitle>
@@ -281,7 +281,7 @@ export function ComponentsView() {
           </Drawer>
 
           <Popover>
-            <PopoverTrigger render={<Button variant="ghost" leading={<Filter size={14} />}>Filtrar por estado</Button>} />
+            <PopoverTrigger render={<Button variant="ghost" size="lg" leading={<Filter size={14} />}>Filtrar por estado</Button>} />
             <PopoverContent align="start">
               <Stack gap={2}>
                 <PopoverTitle>Filtrar por estado</PopoverTitle>
@@ -293,7 +293,7 @@ export function ComponentsView() {
           </Popover>
 
           <ConfirmDialog
-            trigger={<Button variant="destructive-subtle" leading={<KeyRound size={14} />}>Revocar clave</Button>}
+            trigger={<Button variant="destructive-subtle" size="lg" leading={<KeyRound size={14} />}>Revocar clave</Button>}
             title="Revocar clave de API"
             description={
               <>

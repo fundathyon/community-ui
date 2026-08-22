@@ -21,7 +21,7 @@ export interface MultiSelectProps {
   empty?: ReactNode;
   /** aria-label factory for each chip's remove button. Pass your product copy. */
   removeLabel?: (label: string) => string;
-  /** xs 24 · sm 28 · md 32 · lg 36 minimum height — the box grows with chips. */
+  /** xs 24 · sm 28 · md 32 · lg 44 minimum height — the box grows with chips. */
   size?: Size;
   /** Marks invalid when used standalone. Inside a FormField the field state drives this. */
   invalid?: boolean;

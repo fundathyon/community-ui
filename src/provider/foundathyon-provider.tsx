@@ -39,7 +39,7 @@ export interface FoundathyonProviderProps {
   product?: Product;
   /** Custom accent for products without a preset. Prefer presets. */
   accent?: AccentConfig;
-  /** compact (28px controls, suite default) or comfortable (36px, touch). */
+  /** compact (28px controls, suite default) or comfortable (44px, touch). */
   density?: Density;
   defaultTheme?: ThemeChoice;
   theme?: ThemeChoice;

@@ -55,7 +55,7 @@ export interface DatePickerProps {
    */
   presets?: DatePickerPreset[];
   placeholder?: string;
-  /** xs 24 · sm 28 · md 32 · lg 36. Defaults to the density's size. */
+  /** xs 24 · sm 28 · md 32 · lg 44. Defaults to the density's size. */
   size?: Size;
   /** Marks invalid when used standalone. Inside a FormField the field state drives this. */
   invalid?: boolean;

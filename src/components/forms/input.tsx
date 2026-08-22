@@ -14,7 +14,7 @@ const sizeClasses: Record<Size, string> = {
 };
 
 export interface InputProps extends Omit<ComponentProps<typeof BaseInput>, "size"> {
-  /** xs 24 · sm 28 · md 32 · lg 36. Defaults to the density's size. */
+  /** xs 24 · sm 28 · md 32 · lg 44. Defaults to the density's size. */
   size?: Size;
   /** Slot before the value: an icon, or a static prefix like a base URL.
    * Search inputs and input groups are THIS component with slots — not
