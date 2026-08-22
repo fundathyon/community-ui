@@ -32,6 +32,11 @@ Pinning styles: `#v0.2.0` (exact tag) or `#semver:^0.2.0` (range over tags —
 closest to `go get`). Private repo? Each environment needs read access to the
 repo (SSH deploy key or a PAT via git config), same as `GOPRIVATE` + `.netrc`.
 
+**bun caveat:** `bun add` does not resolve the `#semver:<range>` shorthand
+(`404`s trying to fetch a ref literally named `semver:^0.2.0`) — pnpm and npm
+both handle it fine. With bun, pin an exact tag instead:
+`bun add github:fundathyon/community-ui#v0.2.0`.
+
 During local development inside this repo, the demo app consumes it via the
 pnpm workspace instead.
 
