@@ -234,13 +234,21 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
 
   const wrapClass = wrap === "off" ? "whitespace-pre" : "whitespace-pre-wrap break-words";
 
+  // The focus indication is deliberately an INSET box-shadow ring instead of
+  // the DS's standard outset outline (`focus-within:outline-2 offset-2`).
+  // A code editor grows to fill its container — often the full width of a
+  // wide dialog — so an outset ring sits within a few pixels of the dialog
+  // frame and reads as if it were touching or overflowing, even when the
+  // dialog's overflow-hidden safely clips it. Painting the ring inside the
+  // border-box keeps focus obvious for keyboard users without contributing
+  // any pixel to the container's outer footprint.
   const surfaceClasses = cn(
     "group relative overflow-hidden rounded-lg border bg-bg-subtle transition-colors duration-[var(--fdn-dur-fast)]",
     invalid ? "border-danger-border" : "border-border",
     disabled && "cursor-not-allowed opacity-45",
     !disabled &&
       !readOnly &&
-      "focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus",
+      "focus-within:ring-2 focus-within:ring-inset focus-within:ring-focus",
     className,
   );
 
