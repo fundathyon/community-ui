@@ -66,9 +66,13 @@ export function DialogContent({ size = "md", hideClose = false, className, child
       <BaseDialog.Popup
         className={cn(
           "fixed fdn-z-modal flex flex-col gap-3 border border-border bg-surface-raised p-4 shadow-lg",
-          // centered on ≥sm; bottom sheet with drag-free full width on mobile (§08)
+          // Mobile: bottom sheet — top:auto, bottom:0, full width, rounded top corners (§08).
           "inset-x-0 bottom-0 max-h-[92dvh] w-full rounded-t-xl",
-          "sm:inset-0 sm:bottom-auto sm:m-auto sm:h-fit sm:max-h-[85dvh] sm:rounded-xl",
+          // ≥sm: centered dialog. `inset-0` pins all four sides to 0, `m-auto` then
+          // distributes the remaining space around a fit-content box, which centers
+          // both axes. Do NOT reintroduce `sm:bottom-auto` — it undoes the vertical
+          // half of that centering and the dialog snaps to the top of the viewport.
+          "sm:inset-0 sm:m-auto sm:h-fit sm:max-h-[85dvh] sm:rounded-xl",
           sizeClasses[size],
           // §06 enter/exit: opacity + ≤8px travel; exit is opacity-only
           "transition-[opacity,transform] duration-[var(--fdn-dur-slow)] ease-[var(--fdn-ease-enter)]",
