@@ -118,7 +118,7 @@
   --fdn-control-xs: 1.5rem; /* 24 — inside table cells */
   --fdn-control-sm: 1.75rem; /* 28 — compact density default */
   --fdn-control-md: 2rem; /* 32 — forms, dialogs */
-  --fdn-control-lg: 2.25rem; /* 36 — onboarding/login CTA, touch */
+  --fdn-control-lg: 2.75rem; /* 44 — onboarding/login CTA, touch (WCAG tap-target minimum) */
   --fdn-control-height: var(--fdn-control-sm);
 
   /* -- Layout dimensions (§04) -------------------------------------------- */
@@ -255,7 +255,7 @@
 
 /* ---------------------------------------------------------------------------
  * Density (§08) — compact (28px controls) for fine pointers is the default;
- * comfortable (36px) opt-in via attribute; coarse pointers get comfortable
+ * comfortable (44px) opt-in via attribute; coarse pointers get comfortable
  * automatically unless a density was explicitly chosen.
  * ------------------------------------------------------------------------- */
 [data-fdn-density="comfortable"] {

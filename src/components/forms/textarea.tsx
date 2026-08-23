@@ -74,6 +74,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
           "transition-colors duration-[var(--fdn-dur-fast)] placeholder:text-text-muted",
           "disabled:cursor-not-allowed disabled:opacity-45 read-only:bg-bg-subtle",
           "data-[invalid]:border-danger-border",
+          // Focus indicator painted INSIDE the border-box (matches Input) so
+          // it never extends past the textarea's own footprint — safe inside
+          // wide Dialogs where an outset outline would sit close to the frame.
+          "focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-focus",
           sizeClasses[resolvedSize],
           className,
         )}

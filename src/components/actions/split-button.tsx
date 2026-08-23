@@ -31,7 +31,7 @@ export interface SplitButtonProps extends Omit<HTMLAttributes<HTMLDivElement>, "
   /** Secondary actions behind the chevron. Destructive ones are moved last. */
   items: SplitButtonItem[];
   variant?: "primary" | "secondary";
-  /** xs 24 · sm 28 · md 32 · lg 36. Defaults to the density's size (§08). */
+  /** xs 24 · sm 28 · md 32 · lg 44. Defaults to the density's size (§08). */
   size?: Size;
   /** Spinner on the main segment; both segments lock while it runs. */
   loading?: boolean;

@@ -69,6 +69,20 @@ describe("DataTable", () => {
     expect(desktop().getByRole("cell", { name: "bravo" })).toBeInTheDocument();
   });
 
+  it("searches inside structured cell values (user, tags) via globalFilter", () => {
+    const columns: DataTableColumn<Repo>[] = [
+      { id: "owner", header: "Owner", type: "user", accessor: (r) => ({ id: `usr_${r.id}`, name: `Owner of ${r.name}` }), primary: true },
+      { id: "tags", header: "Tags", type: "tags", accessor: (r) => [r.status, "community"] },
+    ];
+    const { rerender } = render(<DataTable columns={columns} data={ROWS} rowId={(r) => r.id} globalFilter="usr_r2" />);
+    expect(desktop().getAllByRole("row").slice(1)).toHaveLength(1);
+    expect(desktop().getByText("Owner of bravo")).toBeInTheDocument();
+
+    rerender(<DataTable columns={columns} data={ROWS} rowId={(r) => r.id} globalFilter="revoked" />);
+    expect(desktop().getAllByRole("row").slice(1)).toHaveLength(1);
+    expect(desktop().getByText("Owner of charlie")).toBeInTheDocument();
+  });
+
   it("distinguishes the empty state from the no-results state", () => {
     const { container, rerender } = render(
       <DataTable columns={COLUMNS} data={[]} rowId={(r) => r.id} emptyState={{ title: "Nothing here" }} />,
@@ -234,5 +248,105 @@ describe("DataTable", () => {
     render(<DataTable columns={COLUMNS} data={ROWS} rowId={(r) => r.id} onRowClick={onRowClick} />);
     await user.click(desktop().getByRole("cell", { name: "alpha" }));
     expect(onRowClick).toHaveBeenCalledWith(ROWS[0]);
+  });
+});
+
+describe("DataTable frame (§14)", () => {
+  it("renders the toolbar inside the frame and swaps its trailing side for the selection summary", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <DataTable
+        columns={COLUMNS}
+        data={ROWS}
+        rowId={(r) => r.id}
+        enableSelection
+        toolbar={<input aria-label="Filter" />}
+        toolbarEnd={<button type="button">View</button>}
+        bulkActions={() => <button type="button">Delete selection</button>}
+        labels={{ selectedCount: (n) => `${n} seleccionada${n === 1 ? "" : "s"}` }}
+      />,
+    );
+    const frame = container.querySelector('[data-slot="data-table"]')!;
+    const toolbar = frame.querySelector('[data-slot="toolbar"]')!;
+    expect(within(toolbar as HTMLElement).getByLabelText("Filter")).toBeInTheDocument();
+    expect(within(toolbar as HTMLElement).getByRole("button", { name: "View" })).toBeInTheDocument();
+    expect(frame.querySelector('[data-slot="footer"]')).toBeInTheDocument();
+
+    await user.click(desktop().getAllByRole("checkbox")[1]!);
+    expect(within(toolbar as HTMLElement).getByText("1 seleccionada")).toBeInTheDocument();
+    expect(within(toolbar as HTMLElement).getByRole("button", { name: "Delete selection" })).toBeInTheDocument();
+    expect(within(toolbar as HTMLElement).queryByRole("button", { name: "View" })).not.toBeInTheDocument();
+    // The search never leaves the bar while rows are selected.
+    expect(within(toolbar as HTMLElement).getByLabelText("Filter")).toBeInTheDocument();
+  });
+
+  it("keeps the toolbar visible in the empty, no-results, error and loading states", () => {
+    const { container, rerender } = render(
+      <DataTable columns={COLUMNS} data={[]} rowId={(r) => r.id} toolbar={<input aria-label="Filter" />} />,
+    );
+    expect(container.querySelector('[data-kind="empty"]')).toBeInTheDocument();
+    expect(screen.getByLabelText("Filter")).toBeInTheDocument();
+
+    rerender(
+      <DataTable columns={COLUMNS} data={ROWS} rowId={(r) => r.id} globalFilter="zzz" toolbar={<input aria-label="Filter" />} />,
+    );
+    expect(container.querySelector('[data-kind="no-results"]')).toBeInTheDocument();
+    expect(screen.getByLabelText("Filter")).toBeInTheDocument();
+
+    rerender(
+      <DataTable columns={COLUMNS} data={[]} rowId={(r) => r.id} error={{ title: "Boom" }} toolbar={<input aria-label="Filter" />} />,
+    );
+    expect(screen.getByText("Boom")).toBeInTheDocument();
+    expect(screen.getByLabelText("Filter")).toBeInTheDocument();
+
+    rerender(
+      <DataTable columns={COLUMNS} data={[]} rowId={(r) => r.id} loading toolbar={<input aria-label="Filter" />} />,
+    );
+    expect(screen.getAllByTestId("skeleton-row").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText("Filter")).toBeInTheDocument();
+  });
+
+  it("renders the summary and the caption in the footer", () => {
+    const { container } = render(
+      <DataTable
+        columns={COLUMNS}
+        data={ROWS}
+        rowId={(r) => r.id}
+        footer="Fila terminal a 0.6 de opacidad"
+        labels={{ of: (shown, total) => `${shown} de ${total} imágenes` }}
+      />,
+    );
+    const footer = container.querySelector('[data-slot="footer"]') as HTMLElement;
+    expect(within(footer).getByText("3 de 3 imágenes")).toBeInTheDocument();
+    expect(within(footer).getByText("Fila terminal a 0.6 de opacidad")).toBeInTheDocument();
+  });
+
+  it("groups rows under group rows in first-appearance order", () => {
+    render(
+      <DataTable
+        columns={COLUMNS}
+        data={ROWS}
+        rowId={(r) => r.id}
+        groupBy={{ key: (r) => (r.status === "revoked" ? "Terminal" : "Live") }}
+      />,
+    );
+    const rows = desktop().getAllByRole("row").slice(1);
+    const texts = rows.map((row) => row.textContent);
+    // Live → alpha, bravo · Terminal → charlie
+    expect(texts[0]).toContain("Live");
+    expect(texts[0]).toContain("2");
+    expect(texts[1]).toContain("alpha");
+    expect(texts[2]).toContain("bravo");
+    expect(texts[3]).toContain("Terminal");
+    expect(texts[4]).toContain("charlie");
+  });
+
+  it("uses overline caps for column headers and a chevron for the sorted one", async () => {
+    const user = userEvent.setup();
+    render(<DataTable columns={COLUMNS} data={ROWS} rowId={(r) => r.id} />);
+    const header = desktop().getByRole("columnheader", { name: /Name/ });
+    expect(header.className).toContain("uppercase");
+    await user.click(within(header).getByRole("button"));
+    expect(desktop().getByRole("columnheader", { name: /Name/ })).toHaveAttribute("aria-sort", "ascending");
   });
 });

@@ -80,6 +80,21 @@ export interface UseDataTableResult<TData> {
   setPage: (page: number) => void;
 }
 
+/**
+ * Text the global filter matches against for one accessor value. Structured
+ * cell values (the `user` object, `tags` arrays) search by their parts, so a
+ * column never has to flatten its value just to stay searchable.
+ */
+function searchableText(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  if (Array.isArray(value)) return value.map(searchableText).join(" ");
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === "object") {
+    return Object.values(value as Record<string, unknown>).map(searchableText).join(" ");
+  }
+  return String(value);
+}
+
 function idsToRecord(ids: string[]): RowSelectionState {
   const record: RowSelectionState = {};
   for (const id of ids) record[id] = true;
@@ -150,11 +165,9 @@ export function useDataTable<TData>(params: UseDataTableParams<TData>): UseDataT
     (tsRow, _columnId, filterValue) => {
       const query = String(filterValue ?? "").trim().toLowerCase();
       if (!query) return true;
-      return columns.some((col) => {
-        const value = col.accessor?.(tsRow.original);
-        if (value === null || value === undefined) return false;
-        return String(value).toLowerCase().includes(query);
-      });
+      return columns.some((col) =>
+        searchableText(col.accessor?.(tsRow.original)).toLowerCase().includes(query),
+      );
     },
     [columns],
   );

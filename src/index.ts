@@ -35,7 +35,7 @@ export {
 } from "./lib/format";
 export { STATUS, STATUS_KEYS, type StatusKey, type StatusSpec, type StatusTreatment } from "./lib/status";
 export type { Density, Product, Size, ThemeChoice, Tone, ToneOrNeutral } from "./lib/types";
-export { FOCUS_RING, FOCUS_RING_INSET } from "./lib/focus";
+export { FOCUS_RING, FOCUS_RING_INSET, FOCUS_RING_INSET_THIN } from "./lib/focus";
 
 // Components by domain
 export * from "./components/typography";

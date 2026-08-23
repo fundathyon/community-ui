@@ -12,7 +12,7 @@
  * Hard limit: past 8 props or 4 variants, split the component in two.
  */
 
-/** Control sizes (§04): xs 24 · sm 28 (compact default) · md 32 · lg 36. */
+/** Control sizes (§04): xs 24 · sm 28 (compact default) · md 32 · lg 44. */
 export type Size = "xs" | "sm" | "md" | "lg";
 
 /** Semantic tone — state semantics only. NEVER use the product accent for state. */
@@ -22,7 +22,7 @@ export type Tone = "info" | "success" | "warning" | "danger";
 export type ToneOrNeutral = Tone | "neutral";
 
 /** Density (§08): compact (28px controls) for fine pointers — the suite default —
- * or comfortable (36px) for touch/onboarding contexts. */
+ * or comfortable (44px) for touch/onboarding contexts. */
 export type Density = "compact" | "comfortable";
 
 /** Theme choice — `system` follows `prefers-color-scheme`. Dark is design-first. */

@@ -120,7 +120,7 @@ export function ConfirmDialog({
       <BaseAlertDialog.Portal>
         <BaseAlertDialog.Backdrop
           className={cn(
-            "fixed inset-0 fdn-z-modal bg-black/60",
+            "fixed inset-0 fdn-z-modal bg-black/60 backdrop-blur-sm",
             "transition-opacity duration-[var(--fdn-dur-base)] ease-[var(--fdn-ease-standard)]",
             "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
           )}
@@ -166,11 +166,12 @@ export function ConfirmDialog({
             </div>
           )}
           <div className="flex items-center justify-end gap-2 pt-1">
-            <Button ref={cancelRef} variant="ghost" disabled={pending} onClick={() => handleOpenChange(false)}>
+            <Button ref={cancelRef} variant="ghost" size="lg" disabled={pending} onClick={() => handleOpenChange(false)}>
               {cancelLabel}
             </Button>
             <Button
               variant={tone === "danger" ? "destructive" : "primary"}
+              size="lg"
               disabled={confirmBlocked}
               loading={pending}
               onClick={handleConfirm}

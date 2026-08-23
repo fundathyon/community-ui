@@ -46,7 +46,7 @@ export interface DateRangePickerProps {
    * Defaults to Last 7/30/90 days; pass your product copy. */
   presets?: DateRangePickerPreset[];
   placeholder?: string;
-  /** xs 24 · sm 28 · md 32 · lg 36. Defaults to the density's size. */
+  /** xs 24 · sm 28 · md 32 · lg 44. Defaults to the density's size. */
   size?: Size;
   /** Marks invalid when used standalone. Inside a FormField the field state drives this. */
   invalid?: boolean;

@@ -222,3 +222,23 @@ export interface DataTableLabels {
   /** Sensitivity badge labels. @default English capitalised level. */
   sensitivity?: Record<SensitivityLevel, string>;
 }
+
+/** An option of a faceted filter (§16): value, label and an optional facet count. */
+export interface DataTableFilterOption {
+  value: string;
+  label: ReactNode;
+  icon?: LucideIcon;
+  /** Rows matching this option — rendered right-aligned and tabular. */
+  count?: number;
+}
+
+/**
+ * Group rows under a key (§14): a group row precedes every run of rows that
+ * share it. Groups keep the order in which their first row appears after
+ * sorting, so a sorted column still reads top-to-bottom inside each group.
+ */
+export interface DataTableGroupBy<TData> {
+  key: (row: TData) => string;
+  /** Group row content. @default the key followed by a counter badge */
+  render?: (key: string, rows: TData[]) => ReactNode;
+}

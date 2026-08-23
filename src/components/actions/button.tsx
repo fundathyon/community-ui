@@ -40,7 +40,7 @@ const buttonVariants = cva(
         xs: "h-control-xs px-2 text-label [&_svg]:size-3",
         sm: "h-control-sm px-2.5 text-label [&_svg]:size-3.5",
         md: "h-control-md px-3 text-label [&_svg]:size-4",
-        lg: "h-control-lg px-3.5 text-body font-medium [&_svg]:size-4",
+        lg: "h-control-lg px-4 text-body font-medium [&_svg]:size-4",
       },
     },
     defaultVariants: {
@@ -52,7 +52,7 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     Omit<VariantProps<typeof buttonVariants>, "size"> {
-  /** xs 24 · sm 28 · md 32 · lg 36. Defaults to the density's size (§08). */
+  /** xs 24 · sm 28 · md 32 · lg 44. Defaults to the density's size (§08). */
   size?: Size;
   /**
    * Shows an in-place spinner and disables the button while KEEPING ITS WIDTH,

@@ -21,7 +21,7 @@ export interface IconButtonProps
    */
   label: string;
   variant?: IconButtonVariant;
-  /** xs 24 · sm 28 · md 32 · lg 36. Defaults to the density's size (§08). */
+  /** xs 24 · sm 28 · md 32 · lg 44. Defaults to the density's size (§08). */
   size?: Size;
   /** In-place spinner; keeps the square footprint (§09). */
   loading?: boolean;
