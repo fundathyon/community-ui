@@ -234,21 +234,21 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
 
   const wrapClass = wrap === "off" ? "whitespace-pre" : "whitespace-pre-wrap break-words";
 
-  // The focus indication is deliberately an INSET box-shadow ring instead of
-  // the DS's standard outset outline (`focus-within:outline-2 offset-2`).
+  // The focus indication is deliberately an INSET 1px box-shadow ring
+  // instead of the DS's standard outset outline (`outline-2 offset-2`).
   // A code editor grows to fill its container — often the full width of a
   // wide dialog — so an outset ring sits within a few pixels of the dialog
   // frame and reads as if it were touching or overflowing, even when the
-  // dialog's overflow-hidden safely clips it. Painting the ring inside the
-  // border-box keeps focus obvious for keyboard users without contributing
-  // any pixel to the container's outer footprint.
+  // dialog's overflow-hidden safely clips it. Painting a THIN ring inside
+  // the border-box keeps focus obvious for keyboard users without adding
+  // any pixel to the container's outer footprint or thickening the frame.
   const surfaceClasses = cn(
     "group relative overflow-hidden rounded-lg border bg-bg-subtle transition-colors duration-[var(--fdn-dur-fast)]",
     invalid ? "border-danger-border" : "border-border",
     disabled && "cursor-not-allowed opacity-45",
     !disabled &&
       !readOnly &&
-      "focus-within:ring-2 focus-within:ring-inset focus-within:ring-focus",
+      "focus-within:ring-1 focus-within:ring-inset focus-within:ring-focus",
     className,
   );
 
@@ -270,10 +270,15 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
 
       <div className="relative flex" style={{ minHeight: minHeightPx, maxHeight: maxHeightPx }}>
         {lineNumbers && (
+          // The gutter drops its explicit `border-r` + `bg-bg-subtle`: the
+          // border-r formed a hard vertical line that, next to the inset
+          // focus ring, read as an extra frame on the left of the editor.
+          // Inheriting the parent surface and separating with generous
+          // padding keeps line numbers legible without noisy chrome.
           <div
             ref={gutterRef}
             aria-hidden
-            className="pointer-events-none select-none overflow-hidden border-r border-border bg-bg-subtle py-3 pl-3 pr-2 font-mono text-code text-text-muted"
+            className="pointer-events-none select-none overflow-hidden py-3 pl-3 pr-3 font-mono text-code text-text-muted"
             style={style}
           >
             {Array.from({ length: lineCount }, (_, i) => (
