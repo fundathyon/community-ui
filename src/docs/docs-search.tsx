@@ -267,10 +267,12 @@ export function DocsSearch({
                 // Inset, not suppressed (§C-02): this row sits flush against the
                 // dialog's own rounded top edge, so the wrapper's normal
                 // positive-offset ring would clip — same fix as CommandPalette.
-                // `focus-within` (not FOCUS_RING_INSET's `focus-visible`) because
-                // the ring belongs to this wrapper when its inner input is
-                // focused, not to the wrapper itself.
-                wrapperClassName="border-0 rounded-none focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-focus"
+                // `focus-within` (not FOCUS_RING_INSET_THIN's `focus-visible`)
+                // because the ring belongs to this wrapper when its inner input
+                // is focused, not to the wrapper itself. Thin (1px/1px, not the
+                // usual 2px/2px): at full dialog width the standard inset ring
+                // traces the whole row and reads as a heavy box.
+                wrapperClassName="border-0 rounded-none focus-within:outline focus-within:outline-1 focus-within:-outline-offset-1 focus-within:outline-focus"
                 className="bg-transparent"
               />
               {loading && <Spinner size={16} label={null} className="text-text-muted" />}
