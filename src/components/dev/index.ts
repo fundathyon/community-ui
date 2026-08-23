@@ -23,6 +23,7 @@ export { HttpResponse, statusTone, type HttpResponseProps } from "./http-respons
 export { InlineCode, type InlineCodeProps } from "./inline-code";
 export { JsonViewer, type JsonViewerProps } from "./json-viewer";
 export { Secret, type SecretProps } from "./secret";
+export { SecretField, type SecretFieldProps } from "./secret-field";
 export { Terminal, TerminalLine, type TerminalLineKind, type TerminalLineProps, type TerminalProps } from "./terminal";
 export { TokenDisplay, type TokenDisplayProps } from "./token-display";
 export { YamlViewer, type YamlViewerProps } from "./yaml-viewer";
