@@ -6,6 +6,11 @@ export {
   type CodeBlockTab,
   type CodeLanguage,
 } from "./code-block";
+export {
+  CodeEditor,
+  type CodeEditorHandle,
+  type CodeEditorProps,
+} from "./code-editor";
 export { CommandBlock, type CommandBlockProps } from "./command-block";
 export { CopyButton, type CopyButtonProps, type CopyButtonSize } from "./copy-button";
 export { CurlBlock, buildCurl, type BuildCurlOptions, type CurlBlockProps } from "./curl-block";
@@ -21,7 +26,12 @@ export { Hash, type HashProps } from "./hash";
 export { HttpRequest, type HttpMethod, type HttpRequestProps } from "./http-request";
 export { HttpResponse, statusTone, type HttpResponseProps } from "./http-response";
 export { InlineCode, type InlineCodeProps } from "./inline-code";
-export { JsonViewer, type JsonViewerProps } from "./json-viewer";
+export { JsonEditor, type JsonEditorProps, type JsonParseError } from "./json-editor";
+export {
+  JsonViewer,
+  type JsonViewerBulkMode,
+  type JsonViewerProps,
+} from "./json-viewer";
 export { Secret, type SecretProps } from "./secret";
 export { SecretField, type SecretFieldProps } from "./secret-field";
 export { Terminal, TerminalLine, type TerminalLineKind, type TerminalLineProps, type TerminalProps } from "./terminal";
