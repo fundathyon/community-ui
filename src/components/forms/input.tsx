@@ -46,8 +46,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       className={cn(
         "flex min-w-0 items-center gap-1.5 rounded-md border border-border-strong bg-surface text-text",
         "transition-colors duration-[var(--fdn-dur-fast)]",
-        // §C-02: visible ring on the visual box, not only a border color change
-        "focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus",
+        // §C-02: visible ring on the visual box. Painted INSIDE the border-box
+        // via an inset box-shadow so the focus indicator never extends past
+        // the input's own footprint — critical inside wide Dialogs, where an
+        // outset outline (4px beyond the border) sits within a few pixels of
+        // the popup frame and reads as if it were touching the modal edge.
+        "focus-within:ring-1 focus-within:ring-inset focus-within:ring-focus",
         "has-[input[data-invalid]]:border-danger-border data-[invalid]:border-danger-border",
         "has-[input:disabled]:cursor-not-allowed has-[input:disabled]:opacity-45",
         "has-[input[readonly]]:bg-bg-subtle",
