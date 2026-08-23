@@ -58,7 +58,7 @@ export function DialogContent({ size = "md", hideClose = false, className, child
     <BaseDialog.Portal>
       <BaseDialog.Backdrop
         className={cn(
-          "fixed inset-0 fdn-z-modal bg-black/60",
+          "fixed inset-0 fdn-z-modal bg-black/60 backdrop-blur-sm",
           "transition-opacity duration-[var(--fdn-dur-base)] ease-[var(--fdn-ease-standard)]",
           "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
         )}
