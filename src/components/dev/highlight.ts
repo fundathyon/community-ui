@@ -12,7 +12,7 @@
  */
 
 /** Languages the §20 tokenizer understands. Unknown values render as plain text. */
-export type CodeLanguage = "bash" | "json" | "yaml" | "http" | "text" | (string & {});
+export type CodeLanguage = "bash" | "json" | "yaml" | "toml" | "http" | "text" | (string & {});
 
 export type TokenKind = "plain" | "keyword" | "string" | "comment" | "muted" | "number";
 
@@ -250,6 +250,104 @@ function tokenizeYamlLine(line: string): CodeToken[] {
   return tokens;
 }
 
+function tokenizeTomlValue(rest: string, push: (text: string, kind: TokenKind) => void): void {
+  let i = 0;
+  while (i < rest.length) {
+    const chunk = rest.slice(i);
+    let m = chunk.match(/^\s+/);
+    if (m) {
+      push(m[0], "plain");
+      i += m[0].length;
+      continue;
+    }
+    m = chunk.match(/^#.*$/);
+    if (m) {
+      push(m[0], "comment");
+      i += m[0].length;
+      continue;
+    }
+    // Basic and literal strings, also the opening/closing line of a """ block.
+    m = chunk.match(/^(?:"""|"(?:[^"\\]|\\.)*(?:"|$)|'''|'[^']*(?:'|$))/);
+    if (m) {
+      push(m[0], "string");
+      i += m[0].length;
+      continue;
+    }
+    // Dates and times (1979-05-27T07:32:00Z) before plain numbers.
+    m = chunk.match(/^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)?|^\d{2}:\d{2}:\d{2}(?:\.\d+)?/);
+    if (m) {
+      push(m[0], "number");
+      i += m[0].length;
+      continue;
+    }
+    m = chunk.match(/^(?:[+-]?(?:0x[\da-fA-F_]+|0o[0-7_]+|0b[01_]+|(?:\d[\d_]*)(?:\.[\d_]+)?(?:[eE][+-]?\d+)?|inf|nan)|true|false)(?=[\s,\]}#]|$)/);
+    if (m) {
+      push(m[0], "number");
+      i += m[0].length;
+      continue;
+    }
+    m = chunk.match(/^[[\]{},=.]+/);
+    if (m) {
+      push(m[0], "muted");
+      i += m[0].length;
+      continue;
+    }
+    // Keys inside an inline table ({ name = "x" }).
+    m = chunk.match(/^[\w-]+(?=\s*=)/);
+    if (m) {
+      push(m[0], "keyword");
+      i += m[0].length;
+      continue;
+    }
+    m = chunk.match(/^[^\s#"'[\]{},=]+/);
+    if (m) {
+      push(m[0], "plain");
+      i += m[0].length;
+      continue;
+    }
+    push(chunk.charAt(0), "plain");
+    i += 1;
+  }
+}
+
+/** Bare, quoted and dotted keys: `name`, `"a b"`, `server.http-port`. */
+const TOML_KEY = String.raw`(?:[\w-]+|"(?:[^"\\]|\\.)*"|'[^']*')(?:\s*\.\s*(?:[\w-]+|"(?:[^"\\]|\\.)*"|'[^']*'))*`;
+const TOML_TABLE = new RegExp(String.raw`^(\s*)(\[\[?)(\s*${TOML_KEY}\s*)(\]\]?)(.*)$`);
+const TOML_ASSIGN = new RegExp(String.raw`^(\s*)(${TOML_KEY})(\s*)(=)`);
+
+function tokenizeTomlLine(line: string): CodeToken[] {
+  const tokens: CodeToken[] = [];
+  const push = (text: string, kind: TokenKind) => {
+    if (text) tokens.push({ text, kind });
+  };
+  if (/^\s*#/.test(line)) {
+    push(line, "comment");
+    return tokens;
+  }
+  // [table] and [[array.of.tables]] headers.
+  const table = line.match(TOML_TABLE);
+  if (table) {
+    push(table[1] ?? "", "plain");
+    push(table[2] ?? "", "muted");
+    push(table[3] ?? "", "keyword");
+    push(table[4] ?? "", "muted");
+    tokenizeTomlValue(table[5] ?? "", push);
+    return tokens;
+  }
+  const key = line.match(TOML_ASSIGN);
+  if (key) {
+    push(key[1] ?? "", "plain");
+    push(key[2] ?? "", "keyword");
+    push(key[3] ?? "", "plain");
+    push(key[4] ?? "", "muted");
+    tokenizeTomlValue(line.slice(key[0].length), push);
+    return tokens;
+  }
+  // Continuation lines of a multi-line array or string.
+  tokenizeTomlValue(line, push);
+  return tokens;
+}
+
 const HTTP_METHODS = /^(GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS|TRACE|CONNECT)(\s+)(\S+)(.*)$/;
 
 function tokenizeHttpLine(line: string): CodeToken[] {
@@ -306,6 +404,7 @@ export function tokenize(code: string, language: CodeLanguage = "text"): CodeTok
   }
   if (language === "json") return lines.map(tokenizeJsonLine);
   if (language === "yaml") return lines.map(tokenizeYamlLine);
+  if (language === "toml") return lines.map(tokenizeTomlLine);
   if (language === "http") {
     let inBody = false;
     return lines.map((line) => {

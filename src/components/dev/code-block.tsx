@@ -28,7 +28,7 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLDivElement>, "ch
   /** The code to render. `children` (as a string) is equivalent. */
   code?: string;
   children?: string;
-  /** bash · json · yaml · http · text. Unknown languages render plain (§20). */
+  /** bash · json · yaml · toml · http · text. Unknown languages render plain (§20). */
   language?: CodeLanguage;
   /**
    * `block` for source/config; `command` prefixes each line with a select-none

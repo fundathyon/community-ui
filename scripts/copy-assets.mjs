@@ -1,5 +1,5 @@
 // Copies non-TS build assets into dist/ after tsc + tailwind runs.
-import { cpSync, mkdirSync, copyFileSync } from "node:fs";
+import { mkdirSync, copyFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 

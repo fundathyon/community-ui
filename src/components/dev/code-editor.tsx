@@ -26,7 +26,7 @@ export interface CodeEditorProps {
   defaultValue?: string;
   /** Fires with the new text on every keystroke. */
   onChange?: (value: string) => void;
-  /** bash · json · yaml · http · text (§20 tokenizer). */
+  /** bash · json · yaml · toml · http · text (§20 tokenizer). */
   language?: CodeLanguage;
   /** Header filename ("payload.json"). Turns on the header row. */
   filename?: string;
