@@ -1,0 +1,169 @@
+/**
+ * Base styles, keyframes and plain-CSS utilities for Foundathyon Community UI.
+ * Plain CSS on purpose: this file works identically under Tailwind v4, the
+ * Tailwind v3 preset path, and the prebuilt stylesheet.
+ */
+
+/* -- App canvas ------------------------------------------------------------ */
+body {
+  background-color: var(--fdn-bg);
+  color: var(--fdn-text);
+  font-family: var(--fdn-font-sans);
+  font-size: 0.8125rem; /* body: 13px — data density does not depend on viewport */
+  line-height: 1.25rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--fdn-accent-bg);
+}
+
+/* -- Global focus ring (§C-02) — 2px ring + 2px offset, never removed
+ *    without a substitute.
+ *
+ *    In `@layer base` (like Tailwind's own Preflight) AND scoped with `:where()`
+ *    for zero specificity, so an `outline-none` utility ALWAYS wins: an
+ *    unlayered rule beats every layer regardless of specificity, and within the
+ *    base layer specificity would still tie — both are closed here. Composite
+ *    controls (Input, Select, Combobox…) render the ring on their wrapper via
+ *    `focus-within` and set `outline-none` on the inner focusable element; this
+ *    keeps them from painting a SECOND, duplicate ring on that inner element.
+ *    Bare interactive elements carry no outline utility, so they keep the ring. */
+@layer base {
+  :where(:focus-visible) {
+    outline: var(--fdn-focus-width) solid var(--fdn-focus);
+    outline-offset: var(--fdn-focus-offset);
+  }
+}
+
+/* -- Scrollbars — quiet, panel-grade -------------------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fdn-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--fdn-border-strong);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* -- Keyframes ------------------------------------------------------------- */
+@keyframes fdn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fdn-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+@keyframes fdn-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+@keyframes fdn-reduced-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* -- Motion utilities (cross-version safe) --------------------------------- */
+.fdn-spin {
+  animation: fdn-spin 0.8s linear infinite;
+}
+.fdn-skeleton {
+  animation: fdn-pulse 1.6s var(--fdn-ease-standard) infinite;
+  background-color: var(--fdn-surface-hover);
+  border-radius: var(--fdn-radius-sm);
+}
+.fdn-indeterminate {
+  animation: fdn-indeterminate 1.4s var(--fdn-ease-standard) infinite;
+}
+.fdn-dur-fast {
+  transition-duration: var(--fdn-dur-fast);
+}
+.fdn-dur-base {
+  transition-duration: var(--fdn-dur-base);
+}
+.fdn-dur-slow {
+  transition-duration: var(--fdn-dur-slow);
+}
+
+/* -- z-index roles (§05) ---------------------------------------------------- */
+.fdn-z-sticky {
+  z-index: var(--fdn-z-sticky);
+}
+.fdn-z-dropdown {
+  z-index: var(--fdn-z-dropdown);
+}
+.fdn-z-fullscreen {
+  z-index: var(--fdn-z-fullscreen);
+}
+.fdn-z-modal {
+  z-index: var(--fdn-z-modal);
+}
+.fdn-z-toast {
+  z-index: var(--fdn-z-toast);
+}
+.fdn-z-command {
+  z-index: var(--fdn-z-command);
+}
+
+/* -- Touch targets (§C-05) — under a coarse pointer, small controls extend
+ *    an invisible hit area toward 44px without changing the visual box ----- */
+@media (pointer: coarse) {
+  .fdn-touch-target {
+    position: relative;
+  }
+  .fdn-touch-target::after {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* -- Reduced motion (§06) — reduce to 0.01ms instead of removing, so
+ *    transition-end callbacks still fire and nothing is left half-mounted.
+ *    Displacement and scale are removed; opacity changes stay (instant). --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* indeterminate indicators become a soft opacity pulse — never a spin */
+  .fdn-spin,
+  .fdn-indeterminate {
+    animation: fdn-reduced-pulse 2s ease-in-out infinite !important;
+  }
+  .fdn-skeleton {
+    animation: fdn-reduced-pulse 2s ease-in-out infinite !important;
+  }
+}
