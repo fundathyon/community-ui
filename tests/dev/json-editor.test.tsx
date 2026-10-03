@@ -60,7 +60,7 @@ describe("JsonEditor", () => {
     );
     await waitFor(() => {
       expect(onValidChange).toHaveBeenCalled();
-      const arg = onValidChange.mock.calls[onValidChange.mock.calls.length - 1][0];
+      const arg = onValidChange.mock.calls.at(-1)?.[0];
       expect(arg).not.toBeNull();
       expect(typeof arg.message).toBe("string");
     });
