@@ -23,6 +23,7 @@ import {
   ScopeBadge,
   SessionItem,
   SessionList,
+  SignInPreview,
   Stack,
   type PermissionMatrixEntry,
 } from "@foundathyon/community-ui";
@@ -53,6 +54,26 @@ const RECOVERY_CODES = [
   "4H2K-9QX7", "PL03-ZZ8A", "7T1M-VV4C", "9RB6-K0DE", "XC72-1WQP",
   "M4N8-3RTU", "0AZ9-LK21", "QW34-88MC", "DF56-7HJK", "23PL-OO9V",
 ];
+
+const SIGN_IN_ES = {
+  title: "Inicia sesión en {app}",
+  titleGeneric: "Inicia sesión",
+  subtitle: "Para continuar en {app}",
+  passwordlessTitle: "Entra a {app}",
+  passwordlessSubtitle: "Te enviamos un código a tu correo",
+  emailPlaceholder: "tu@empresa.com",
+  password: "Contraseña",
+  forgotPassword: "¿La olvidaste?",
+  submit: "Iniciar sesión",
+  sendCode: "Enviar código",
+  sendMagicLink: "Enviarme un enlace de acceso",
+  useCode: "Usar un código por correo",
+  continueWith: "Continuar con {provider}",
+  or: "o",
+  noAccount: "¿No tienes cuenta?",
+  createAccount: "Crear cuenta",
+  protectedBy: "Protegido por Foundathyon Accounts",
+};
 
 export function AuthView() {
   return (
@@ -195,6 +216,25 @@ export function AuthView() {
           </CardBody>
         </Card>
       </Grid>
+
+      <Card>
+        <CardHeader>Vista previa del componente embebido de Accounts</CardHeader>
+        <CardBody>
+          <Grid min="21rem" gap={3}>
+            <SignInPreview
+              branding={{ name: "Acme", accent: { hue: 255, l: 0.55, c: 0.16 } }}
+              strategies={{ password: true, emailCode: true, magicLink: false, oauth: ["google", "github"] }}
+              labels={SIGN_IN_ES}
+            />
+            <SignInPreview
+              scheme="dark"
+              branding={{ name: "Acme", accent: "neutral", layout: "split" }}
+              strategies={{ password: false, emailCode: true, magicLink: true, oauth: [] }}
+              labels={SIGN_IN_ES}
+            />
+          </Grid>
+        </CardBody>
+      </Card>
 
       <Card>
         <CardHeader>Matriz de permisos</CardHeader>
