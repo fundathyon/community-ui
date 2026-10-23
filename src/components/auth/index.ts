@@ -30,3 +30,13 @@ export {
   type OAuthProviderGroupProps,
 } from "./oauth-provider-button";
 export { RecoveryCodes, type RecoveryCodesProps } from "./recovery-codes";
+export {
+  SignInPreview,
+  signInAccentColor,
+  signInAccentOnColor,
+  type SignInPreviewAccent,
+  type SignInPreviewBranding,
+  type SignInPreviewLabels,
+  type SignInPreviewProps,
+  type SignInPreviewStrategies,
+} from "./sign-in-preview";

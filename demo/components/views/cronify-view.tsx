@@ -14,9 +14,16 @@ import {
   ResourceHeader,
   Stack,
   StatusBadge,
+  CronExecutionsTable,
+  CronJobsTable,
+  DropdownMenuItem,
+  ExecutionLogsDialog,
+  type CronExecution,
+  type CronJob as CronifyJob,
   type DataTableColumn,
 } from "@foundathyon/community-ui";
-import { CalendarClock, Pause, Play, RotateCcw } from "lucide-react";
+import { CalendarClock, Pause, Pencil, Play, RotateCcw } from "lucide-react";
+import { useState } from "react";
 
 type JobStatus = "healthy" | "processing" | "failed" | "disabled";
 
@@ -57,7 +64,27 @@ const JOBS: CronJob[] = [
   { id: "job_06", name: "legacy-cache-warmup", schedule: "0 3 * * *", lastDuration: 5100, status: "disabled", nextRun: "2026-08-22T03:00:00Z" },
 ];
 
+const LIB_JOBS: CronifyJob[] = [
+  { id: "j1", name: "Sincronizar facturas", enabled: true, type: "http", schedule: "*/5 * * * *", http: { method: "POST", url: "https://api.acme.test/v1/invoices/sync" } },
+  { id: "j2", name: "Limpiar sesiones", description: "Borra sesiones caducadas", enabled: true, type: "http", schedule: "0 3 * * *", http: { method: "DELETE", url: "https://api.acme.test/v1/sessions/expired" } },
+  { id: "j3", name: "Informe semanal", enabled: false, type: "script", schedule: "0 9 * * 1" },
+];
+
+const LIB_EXECUTIONS: CronExecution[] = [
+  { id: "x1", jobName: "Sincronizar facturas", status: "success", trigger: "scheduled", createdAt: "2026-10-22T10:05:00Z", durationMs: 412 },
+  { id: "x2", jobName: "Sincronizar facturas", status: "running", trigger: "manual", createdAt: "2026-10-22T10:07:12Z" },
+  { id: "x3", jobName: "Limpiar sesiones", status: "timeout", trigger: "scheduled", createdAt: "2026-10-22T03:00:00Z", durationMs: 30_000, errorMessage: "context deadline exceeded" },
+];
+
+const PRESETS_ES = [
+  { value: "*/5 * * * *", label: "Cada 5 minutos" },
+  { value: "0 3 * * *", label: "Cada día a las 03:00" },
+  { value: "0 9 * * 1", label: "Lunes a las 09:00" },
+];
+
 export function CronifyView() {
+  const [libJobs, setLibJobs] = useState(LIB_JOBS);
+  const [open, setOpen] = useState<CronExecution | null>(null);
   const columns: DataTableColumn<CronJob>[] = [
     { id: "name", header: "Job", type: "text", primary: true, accessor: (j) => j.name, sortable: true },
     { id: "schedule", header: "Programación", type: "cron", accessor: (j) => j.schedule, describe: describeCron },
@@ -179,6 +206,31 @@ export function CronifyView() {
           </CardBody>
         </Card>
       </Grid>
+
+      <Card>
+        <CardHeader>Componentes de la librería · CronJobsTable y CronExecutionsTable</CardHeader>
+        <CardBody>
+          <Stack gap={4}>
+            <CronJobsTable
+              jobs={libJobs}
+              onToggle={(job, enabled) => setLibJobs((js) => js.map((j) => (j.id === job.id ? { ...j, enabled } : j)))}
+              onRun={() => {}}
+              rowActions={() => <DropdownMenuItem icon={Pencil}>Editar</DropdownMenuItem>}
+              labels={{ name: "Nombre", schedule: "Frecuencia", target: "Destino", enabled: "Activo", actions: "Acciones", run: "Ejecutar ahora", more: "Más acciones", enable: "Activar {name}", presets: PRESETS_ES }}
+            />
+            <CronExecutionsTable
+              executions={LIB_EXECUTIONS}
+              onSelect={setOpen}
+              labels={{ started: "Inicio", duration: "Duración", status: "Estado", trigger: "Origen", triggers: { scheduled: "Programada", manual: "Manual", task: "Tarea" }, statuses: { success: "OK", running: "En curso", timeout: "Timeout" } }}
+            />
+          </Stack>
+          <ExecutionLogsDialog
+            execution={open}
+            onOpenChange={(o) => !o && setOpen(null)}
+            logs={open?.id === "x3" ? [{ id: "l1", stream: "system", message: "POST https://api.acme.test/v1/sessions/expired" }, { id: "l2", stream: "stderr", message: "error: context deadline exceeded after 30s" }] : []}
+          />
+        </CardBody>
+      </Card>
     </Stack>
   );
 }
