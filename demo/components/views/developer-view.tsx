@@ -20,8 +20,11 @@ import {
   TerminalLine,
   Text,
   YamlViewer,
+  RunGraph,
+  RunStatusBadge,
+  type RunJob,
 } from "@foundathyon/community-ui";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 const USER_RESPONSE = {
   id: "9424bb43-52c7-4c97-a1e2-8f0b7c1d4e5a",
@@ -73,7 +76,29 @@ function Section({ title, meta, children }: { title: ReactNode; meta?: ReactNode
   );
 }
 
+const RUN_JOBS: RunJob[] = [
+  { name: "vet", stage: 0, status: "succeeded", startedAt: "2026-10-22T10:00:00Z", finishedAt: "2026-10-22T10:00:41Z" },
+  { name: "test", stage: 0, status: "succeeded", startedAt: "2026-10-22T10:00:00Z", finishedAt: "2026-10-22T10:01:25Z" },
+  { name: "image", stage: 1, needs: ["vet", "test"], status: "running", startedAt: "2026-10-22T10:01:30Z" },
+  { name: "scan", stage: 2, needs: ["image"], status: "pending" },
+  { name: "publish", stage: 2, needs: ["image"], status: "pending" },
+];
+
+const RUN_LABELS = {
+  pending: "En cola",
+  scheduled: "Programado",
+  provisioning: "Preparando",
+  running: "Corriendo",
+  succeeded: "Éxito",
+  failed: "Falló",
+  cancelled: "Cancelado",
+  timed_out: "Tiempo agotado",
+  rejected: "Rechazado",
+  skipped: "Omitido",
+};
+
 export function DeveloperView() {
+  const [job, setJob] = useState<string | null>("image");
   return (
     <Stack gap={6}>
       <PageHeader
@@ -175,6 +200,22 @@ export function DeveloperView() {
             { name: "JWT_SECRET", value: "hs256_9f21c0e4a7b3d8f1e6c2", secret: true },
           ]}
         />
+      </Section>
+
+      <Section title="Corrida de pipeline · RunGraph">
+        <RunGraph
+          jobs={RUN_JOBS}
+          file=".foundathyon/pipelines/release.yml"
+          trigger="on: push · v1.4.2"
+          selected={job}
+          onSelect={setJob}
+          statusLabels={RUN_LABELS}
+        />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {(["succeeded", "running", "failed", "timed_out", "cancelled", "pending"] as const).map((s) => (
+            <RunStatusBadge key={s} status={s} labels={RUN_LABELS} />
+          ))}
+        </div>
       </Section>
     </Stack>
   );
