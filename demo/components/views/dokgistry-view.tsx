@@ -21,7 +21,9 @@ import {
   Tabs,
   TabsList,
   TabsPanel,
+  RegistryRepositoriesTable,
   type DataTableColumn,
+  type RegistryRepository,
   type StatusKey,
 } from "@foundathyon/community-ui";
 import { Copy, Download, Package, Trash2 } from "lucide-react";
@@ -58,6 +60,12 @@ const NGINX_FACTS = [
   { label: "Arquitecturas", value: "linux/amd64 · linux/arm64" },
   { label: "Capas", value: "6 · 142 MB comprimido" },
   { label: "Firma", value: "cosign · verificada", mono: false },
+];
+
+const LIB_REPOS: RegistryRepository[] = [
+  { name: "acme/api", images: 42, sizeBytes: 1_932_735_283, lastPushedAt: "2026-10-22T10:05:00Z", lastPushedBy: "ci" },
+  { name: "acme/web", images: 17, sizeBytes: 412_090_000, lastPushedAt: "2026-10-21T18:40:00Z", lastPushedBy: "rafa" },
+  { name: "acme/worker", images: 3, sizeBytes: 98_000_000, lastPushedAt: null },
 ];
 
 export function DokgistryView() {
@@ -245,6 +253,17 @@ export function DokgistryView() {
           </CardBody>
         </Card>
       </Grid>
+
+      <Card>
+        <CardHeader>Componente de la librería · RegistryRepositoriesTable</CardHeader>
+        <CardBody>
+          <RegistryRepositoriesTable
+            repositories={LIB_REPOS}
+            getHref={(r) => `#${r.name}`}
+            labels={{ repository: "Repositorio", images: "Imágenes", size: "Tamaño", lastPush: "Último push" }}
+          />
+        </CardBody>
+      </Card>
     </Stack>
   );
 }
