@@ -1,0 +1,50 @@
+"use client";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Collapsible } from "@base-ui/react/collapsible";
+import { ChevronDown } from "lucide-react";
+import { cn } from "../lib/cn";
+import { Icon } from "../components/typography/icon";
+/**
+ * DocsSidebar — the docs navigation tree (§26). A scrollable `nav` of
+ * `DocsSidebarSection`s, `DocsSidebarGroup`s and `DocsSidebarItem`s. It is
+ * docs-specific (a link tree, not the app shell's icon rail) but reuses the
+ * shell's active treatment: accent text + a 2px left bar (§12).
+ */
+export function DocsSidebar({ label = "Documentation", className, children, ...props }) {
+    return (_jsx("nav", { "aria-label": label, className: cn("flex flex-col gap-4 py-4 pr-2 text-body", className), ...props, children: children }));
+}
+/** A titled, always-open group of sidebar items. For a foldable group use
+ * `DocsSidebarGroup`. */
+export function DocsSidebarSection({ label, className, children, ...props }) {
+    return (_jsxs("div", { className: cn("flex flex-col gap-0.5", className), ...props, children: [label !== undefined && (_jsx("div", { className: "px-3 pb-1 text-overline uppercase text-text-muted", children: label })), children] }));
+}
+const depthPadding = ["pl-3", "pl-6", "pl-9"];
+/**
+ * DocsSidebarItem — one destination in the docs tree (§26/§12). Active state is
+ * accent text with a 2px left bar and `aria-current="page"`. Renders `<a>` by
+ * default; pass `render` for a framework router link.
+ */
+export function DocsSidebarItem({ label, href, active = false, depth = 0, render, className, ...props }) {
+    const itemProps = {
+        href,
+        "aria-current": active ? "page" : undefined,
+        className: cn("relative flex h-8 items-center rounded-md pr-2 text-body no-underline", depthPadding[depth], "transition-colors duration-[var(--fdn-dur-fast)] ease-[var(--fdn-ease-standard)]", active
+            ? [
+                "font-medium text-accent",
+                // 2px current bar pinned to the tree's left edge (§12).
+                "before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-accent-solid before:content-['']",
+            ]
+            : "text-text-secondary hover:bg-surface-hover hover:text-text", "fdn-touch-target", className),
+        children: _jsx("span", { className: "min-w-0 truncate", children: label }),
+        ...props,
+    };
+    return render ? render(itemProps) : _jsx("a", { ...itemProps });
+}
+/**
+ * DocsSidebarGroup — a collapsible group of items with a chevron trigger (§26).
+ * Built on Base UI Collapsible so the section folds away; put `DocsSidebarItem`s
+ * inside. Use `DocsSidebarSection` when the group should always stay open.
+ */
+export function DocsSidebarGroup({ label, defaultOpen = true, className, children, ...props }) {
+    return (_jsxs(Collapsible.Root, { defaultOpen: defaultOpen, className: cn("flex flex-col gap-0.5", className), ...props, children: [_jsxs(Collapsible.Trigger, { className: cn("group flex h-8 items-center gap-1 rounded-md px-3 text-overline uppercase text-text-muted", "transition-colors duration-[var(--fdn-dur-fast)] ease-[var(--fdn-ease-standard)] hover:text-text", "fdn-touch-target"), children: [_jsx("span", { className: "min-w-0 flex-1 text-left", children: label }), _jsx(Icon, { icon: ChevronDown, size: 14, className: "transition-transform duration-[var(--fdn-dur-fast)] ease-[var(--fdn-ease-standard)] group-data-[panel-open]:rotate-0 -rotate-90" })] }), _jsx(Collapsible.Panel, { className: cn("flex flex-col gap-0.5 overflow-hidden", "h-[var(--collapsible-panel-height)] transition-[height] duration-[var(--fdn-dur-base)] ease-[var(--fdn-ease-standard)]", "data-[starting-style]:h-0 data-[ending-style]:h-0"), children: children })] }));
+}

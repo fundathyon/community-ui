@@ -1,0 +1,1 @@
+export { RegistryRepositoriesTable, type RegistryRepositoriesTableLabels, type RegistryRepositoriesTableProps, type RegistryRepository, type RegistryRepositoryLinkProps, } from "./registry-repositories-table";
