@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Grid, MetricCard, PageHeader, Stack, StatCard } from "@foundathyon/community-ui";
+import { Button, Grid, MetricCard, PageHeader, Stack, StatCard, UptimeBars, type UptimeDay } from "@foundathyon/community-ui";
 import {
   AreaChart,
   BarChart,
@@ -89,6 +89,15 @@ const uptime = [
   { start: new Date(now - 12 * DAY), end: new Date(now - 12 * DAY + DAY / 4), status: "down" as const },
   { start: new Date(now - 12 * DAY + DAY / 4), end: new Date(now), status: "up" as const },
 ];
+
+// 90 días con un hueco al principio, una caída y dos días lentos.
+const UPTIME_DAYS: UptimeDay[] = Array.from({ length: 90 }, (_, i) => {
+  const day = new Date(Date.UTC(2026, 9, 22) - (89 - i) * 86_400_000).toISOString().slice(0, 10);
+  if (i < 6) return { day, status: "nodata", uptime: null };
+  if (i === 61) return { day, status: "down", uptime: 96.4, down: 52 };
+  if (i === 40 || i === 77) return { day, status: "degraded", uptime: 99.6, down: 0 };
+  return { day, status: "up", uptime: 100, down: 0 };
+});
 
 export function ChartsView() {
   const [range, setRange] = useState("24h");
@@ -198,6 +207,18 @@ export function ChartsView() {
           startCaption="hace 90 d"
           endCaption="hoy"
           statusLabels={{ up: "Operativo", degraded: "Degradado", down: "Caído", unknown: "Sin datos" }}
+        />
+      </ChartCard>
+
+      <ChartCard title="Disponibilidad por día · UptimeBars">
+        <UptimeBars
+          days={UPTIME_DAYS}
+          label="Disponibilidad de core-api: 99,93 % en 90 días"
+          todayLabel="Hoy"
+          daysAgoLabel={(n) => `Hace ${n} días`}
+          dayTitle={(d) =>
+            d.status === "nodata" ? `${d.day} · sin datos` : `${d.day} · ${d.uptime} %${d.down ? ` · ${d.down} checks fallidos` : ""}`
+          }
         />
       </ChartCard>
 

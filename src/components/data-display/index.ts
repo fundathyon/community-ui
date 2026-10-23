@@ -33,3 +33,4 @@ export {
 } from "./status-indicator";
 export { Timeline, TimelineItem, type TimelineItemProps, type TimelineMarker, type TimelineProps } from "./timeline";
 export { Tree, type TreeNode, type TreeProps } from "./tree";
+export { UptimeBars, type UptimeBarsProps, type UptimeDay, type UptimeDayStatus } from "./uptime-bars";
