@@ -52,3 +52,4 @@ export * from "./components/auth";
 export * from "./components/security";
 export * from "./components/resource";
 export * from "./components/crons";
+export * from "./components/registry";
