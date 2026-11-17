@@ -41,10 +41,16 @@ export function formatDuration(ms: number): string {
   return rm > 0 ? `${h} h ${String(rm).padStart(2, "0")} m` : `${h} h`;
 }
 
-/** Grouped integer for tabular columns — "2 481" (narrow spaces, es-ES). */
+/**
+ * Grouped number for tabular columns — "2.481" in es-ES, "2,481" in en.
+ *
+ * Grouping is forced: by default `es` leaves four-digit numbers ungrouped
+ * (CLDR minimumGroupingDigits = 2), so "8210" sat next to "24.816" in the
+ * same column and comparable figures stopped looking comparable (§14).
+ */
 export function formatNumber(value: number, locale = "es-ES"): string {
   if (!Number.isFinite(value)) return "—";
-  return new Intl.NumberFormat(locale).format(value);
+  return new Intl.NumberFormat(locale, { useGrouping: "always" } as unknown as Intl.NumberFormatOptions).format(value);
 }
 
 /** Absolute date — "7 ago 2026". */
