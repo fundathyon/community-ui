@@ -11,6 +11,11 @@ describe("ProgressChart", () => {
     expect(bar).toHaveAttribute("aria-valuetext", "90 / 100");
   });
 
+  it("names the progressbar with its label", () => {
+    render(<ProgressChart label="Usuarios activos del mes" value={8210} max={10000} />);
+    expect(screen.getByRole("progressbar", { name: "Usuarios activos del mes" })).toBeInTheDocument();
+  });
+
   it("renders threshold markers with their tone label (§22 quota)", () => {
     render(
       <ProgressChart

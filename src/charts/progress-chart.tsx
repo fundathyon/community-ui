@@ -113,6 +113,10 @@ export function ProgressChart({
         )}
         <div
           role="progressbar"
+          // The frame shows `label` as a heading; the bar itself needs the name
+          // too or screen readers announce an anonymous progressbar (axe:
+          // aria-progressbar-name).
+          aria-label={label}
           aria-valuemin={0}
           aria-valuemax={max}
           aria-valuenow={value}
