@@ -1,8 +1,13 @@
-import type {
-  HTMLAttributes,
-  TableHTMLAttributes,
-  TdHTMLAttributes,
-  ThHTMLAttributes,
+"use client";
+
+import {
+  useEffect,
+  useRef,
+  useState,
+  type HTMLAttributes,
+  type TableHTMLAttributes,
+  type TdHTMLAttributes,
+  type ThHTMLAttributes,
 } from "react";
 import { cn } from "../../lib/cn";
 
@@ -15,19 +20,57 @@ import { cn } from "../../lib/cn";
  *
  * The wrapper owns the rounded border, surface and horizontal scroll; the inner
  * `<table>` carries a `group` + `data-sticky` marker so {@link TableHeader} can
- * opt into a sticky header purely in CSS (no context, stays server-safe).
+ * opt into a sticky header purely in CSS (no context).
+ *
+ * When the table is wider than its wrapper, the wrapper becomes a keyboard
+ * stop (`tabIndex=0`) so it can be scrolled with the arrow keys (WCAG 2.1.1,
+ * axe `scrollable-region-focusable`), and a named `region` when `label` or the
+ * table's `aria-label` gives it a name. A table that fits adds no tab stop.
  */
 export interface TableProps extends HTMLAttributes<HTMLDivElement> {
   /** Pin the header to the top of the scroll container (§11). */
   stickyHeader?: boolean;
   /** Props forwarded to the inner `<table>` element. */
   tableProps?: TableHTMLAttributes<HTMLTableElement>;
+  /**
+   * Accessible name of the scroll region, used only while the table overflows.
+   * Falls back to `tableProps["aria-label"]`.
+   */
+  label?: string;
 }
 
-export function Table({ stickyHeader, className, children, tableProps, ...props }: TableProps) {
+/** True while the element's content is wider than the element itself. */
+function useHorizontalOverflow<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [overflows, setOverflows] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const check = () => setOverflows(el.scrollWidth > el.clientWidth + 1);
+    check();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(check);
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, overflows] as const;
+}
+
+export function Table({ stickyHeader, className, children, tableProps, label, ...props }: TableProps) {
+  const [ref, overflows] = useHorizontalOverflow<HTMLDivElement>();
+  const name = label ?? tableProps?.["aria-label"];
   return (
     <div
-      className={cn("overflow-x-auto rounded-xl border border-border bg-surface", className)}
+      ref={ref}
+      tabIndex={overflows ? 0 : undefined}
+      role={overflows && name ? "region" : undefined}
+      aria-label={overflows && name ? name : undefined}
+      className={cn(
+        "overflow-x-auto rounded-xl border border-border bg-surface",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus",
+        className,
+      )}
       {...props}
     >
       <table

@@ -92,3 +92,45 @@ describe("Table primitives", () => {
     expect(header.className).toContain("group-data-[sticky]:sticky");
   });
 });
+
+describe("Table scroll region", () => {
+
+  it("adds no tab stop while the table fits", () => {
+    const { container } = render(
+      <Table label="Accesos">
+        <TableBody>
+          <TableRow>
+            <TableCell>a</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    );
+    const wrapper = container.firstElementChild as HTMLElement;
+    expect(wrapper).not.toHaveAttribute("tabindex");
+    expect(wrapper).not.toHaveAttribute("role");
+  });
+
+  it("becomes a named, focusable region when it overflows", async () => {
+    const proto = HTMLElement.prototype;
+    const scroll = Object.getOwnPropertyDescriptor(proto, "scrollWidth");
+    const client = Object.getOwnPropertyDescriptor(proto, "clientWidth");
+    Object.defineProperty(proto, "scrollWidth", { configurable: true, get: () => 900 });
+    Object.defineProperty(proto, "clientWidth", { configurable: true, get: () => 300 });
+    try {
+      render(
+        <Table tableProps={{ "aria-label": "Inicios de sesión" }}>
+          <TableBody>
+            <TableRow>
+              <TableCell>a</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>,
+      );
+      const region = await screen.findByRole("region", { name: "Inicios de sesión" });
+      expect(region).toHaveAttribute("tabindex", "0");
+    } finally {
+      if (scroll) Object.defineProperty(proto, "scrollWidth", scroll);
+      if (client) Object.defineProperty(proto, "clientWidth", client);
+    }
+  });
+});
